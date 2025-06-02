@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import './Admin.scss';
 // import Nav from '../../components/admin/navbar/nav';
 import Chatbot from '../../components/chatbot/chatbotContainer';
@@ -6,6 +6,7 @@ import Toast from '../../components/toast/toast';
 import IncomeTracker from '../../components/cards/incomeTracker/IncomeTracker';
 import AssetsAllocation from '../../components/cards/assetsAllocation/assetsAllocation';
 import RetirementGoal from '../../components/cards/retirementGoal/RetirementGoal';
+import PensionDashboard from '../../components/cards/pension/pension.tsx';
 
 const Admin: React.FC = () => {
     const [showModal, setShowModal] = useState(false);
@@ -16,6 +17,10 @@ const Admin: React.FC = () => {
         message: '',
         show: false,
     });
+    const [isDragging, setIsDragging] = useState('');
+    const mainPanel = useRef<HTMLDivElement>(null);
+    const resizer = useRef<HTMLDivElement>(null);
+    const chatBot = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (showMsg) {
@@ -35,6 +40,37 @@ const Admin: React.FC = () => {
         }, 2000);
     }, []);
 
+    //add ability of resizing the panel
+    const resizePanel = (e: React.MouseEvent) => {
+        let main = mainPanel.current as HTMLElement;
+        let sideBar = chatBot.current as HTMLElement;
+        const initMainWidth = main.getBoundingClientRect().width;
+        const initSideWidth = sideBar.getBoundingClientRect().width;
+        
+        // The current position of mouse in current browser
+        let startX = e.clientX;
+
+        const mouseMoveHandler = function (mouse_e: MouseEvent) {
+                main.style.width = initMainWidth + (mouse_e.clientX - startX) + 'px';
+                main.style.minWidth = 'unset';
+                sideBar.style.width = initSideWidth + (mouse_e.clientX + startX) + 'px';
+                sideBar.style.minWidth = 'unset';
+            }
+    
+
+        const mouseUpHandler = function () {
+            // Remove the handlers of 'mousemove' and 'mouseup'
+            document.removeEventListener('mousemove', mouseMoveHandler);
+            document.removeEventListener('mouseup', mouseUpHandler);
+            //dragEle.classList.remove('resizing');
+            setIsDragging('');
+        };
+
+        document.addEventListener('mousemove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler);
+        setIsDragging('dragging');
+    };
+
     return (
         <>
             <div className="app-container">
@@ -53,7 +89,7 @@ const Admin: React.FC = () => {
                     {/* <Nav /> */}
 
                     <div className={`history-container ${showModal && 'expand'}`}>
-                        <main>
+                        <main ref={mainPanel}>
                             <header>
                                 <a href="https://github.com/Harley-Li/Me" className="site-logo"></a> <span>FIDELITY</span>
                                 <div className="tab-list">
@@ -114,10 +150,17 @@ const Admin: React.FC = () => {
                             <div className="content-area">
                                 <IncomeTracker></IncomeTracker>
                                 <AssetsAllocation></AssetsAllocation>
+                                <PensionDashboard></PensionDashboard>
                                 <RetirementGoal></RetirementGoal>
                             </div>
                         </main>
-                        <aside aria-labelledby="sidebar_title">
+                        <div className='resizer' ref={resizer}
+                            onMouseDown={(e: React.MouseEvent) => {
+                                resizePanel(e);
+                            }}>
+                            <div className='bar'></div>
+                        </div>
+                        <aside aria-labelledby="sidebar_title" ref={chatBot} >
                             <Chatbot></Chatbot>
                         </aside>
                     </div>

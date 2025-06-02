@@ -4,7 +4,6 @@
         min-height: 2.25rem;
         margin-bottom: 2rem;
         border-bottom: 1px solid transparent;
-        //border-image: linear-gradient(to right, #fff, #e8eaec, #fff) 1;;
         display: flex;
         align-items: center;
         padding: 0 1rem 0 0;
@@ -224,32 +223,39 @@
                     gap: 1.5rem;
                     max-height: calc(100% - 68px);
                     overflow: auto;
+                    container-type: inline-size;
 
-                    /* 1. 针对整个滚动条 */
+                    @container (max-width: 1300px) {
+                        & > * {
+                            &:nth-child(3) {
+                                order: 4;
+                            }
+                            &.retirement-goal {
+                                align-self: auto;
+                            }
+                        }
+                    }
+
                     &::-webkit-scrollbar {
-                        width: 8px; /* 设置滚动条的宽度 */
-                        background-color: transparent; /* 整个滚动条区域的背景，设置为透明 */
+                        width: 8px;
+                        background-color: transparent;
                     }
 
-                    /* 2. 针对滚动条的轨道 (track) */
                     &::-webkit-scrollbar-track {
-                        background-color: transparent; /* 轨道背景完全透明，实现“不显示 track” */
+                        background-color: transparent;
                     }
 
-                    /* 3. 针对滚动条的滑块 (thumb) */
                     &::-webkit-scrollbar-thumb {
                         background: linear-gradient(45deg, #e8eaec, #1b3b5c, #e8eaec);
-                        border-radius: 10px; /* 显著的圆角，使其看起来像一个胶囊或药丸，非常柔和 */
+                        border-radius: 10px;
                     }
 
-                    /* 4. 针对滚动条滑块的 hover 状态 */
                     &::-webkit-scrollbar-thumb:hover {
                         background: linear-gradient(45deg, #1b3b5c, #e8eaec, #1b3b5c);
                     }
 
-                    /* 5. 滚动条的角落 (corner) */
                     &::-webkit-scrollbar-corner {
-                        background-color: transparent; /* 保持透明 */
+                        background-color: transparent;
                     }
                 }
 
@@ -277,8 +283,6 @@
             }
 
             &.expand {
-                column-gap: 1.5rem;
-
                 main {
                     min-width: calc(100% - 1.5rem - 25rem);
                     width: calc(100% - 1.5rem - 25rem);
@@ -291,6 +295,27 @@
                     max-width: 25rem;
                     width: 25rem;
                 }
+
+                .resizer {
+                    width: 1.5rem;
+                    display: flex;
+                    justify-content: center;
+
+                    &:hover {
+                        cursor: col-resize;
+
+                        .bar {
+                            width: 0;
+                            border-left: 2px solid transparent;
+                            border-image: linear-gradient(to bottom, transparent, #e8eaec, transparent) 1;
+                            position: relative;
+                        }
+                    }
+                }
+            }
+
+            .resizer {
+                display: none;
             }
         }
     }

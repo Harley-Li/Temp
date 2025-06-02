@@ -1,0 +1,157 @@
+.card {
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    width: fit-content;
+    height: 246px;
+}
+
+.combined-pension-card {
+    display: flex;
+    gap: 1.5rem;
+
+    .card-section {
+        padding-top: 13px;
+
+        &:not(:last-child) {
+            border-right: 1px solid #e0e0e0;
+            padding-right: 1.5rem;
+        }
+    }
+
+    .overview-section {
+        padding-top: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .overview-value-block {
+        margin-top: auto;
+    }
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333333;
+}
+
+.card-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    column-gap: 2rem;
+    align-items: center;
+    height: 2.5rem;
+
+    &.no-bottom {
+        margin-bottom: 1rem;
+    }
+
+    .info-text {
+        font-size: 14px;
+        color: #2c3e50;
+        display: block;
+
+        span {
+            display: block;
+            margin-top: .75rem;
+            color: #2c3e50;
+        }
+    }
+}
+
+.card-subtitle {
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 1;
+    color: #2c3e50;
+}
+
+.large-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+    line-height: 1;
+}
+
+.small-text {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-top: 5px;
+    line-height: 1.5;
+
+    strong {
+        font-weight: 600;
+    }
+}
+
+.value-indicator {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &.positive {
+        color: #28a745;
+    }
+
+    &.negative {
+        color: #dc3545;
+    }
+}
+
+
+
+.call-to-action {
+    margin-top: .5rem;
+    display: inline-flex;
+    align-items: center;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
+
+    &:hover {
+        color: #0056b3;
+    }
+}
+
+.recent-contribution-item {
+    margin-bottom: 15px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.contribution-label {
+    font-size: 15px;
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.contribution-value {
+    font-size: 1.6em;
+    font-weight: 600;
+    color: #333333;
+
+    &.na {
+        color: #dc3545;
+    }
+}
+
+.contribution-date {
+    font-size: 13px;
+    color: #2c3e50;
+    margin-top: 5px;
+}

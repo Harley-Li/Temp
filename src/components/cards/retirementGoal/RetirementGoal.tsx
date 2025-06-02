@@ -1,5 +1,5 @@
 import React from 'react';
-import HalfCircleProgress from '../halfCircleProgress/halfCircleProgress';
+import HalfCircleProgress from '../../halfCircleProgress/halfCircleProgress.tsx';
 import './ index.scss';
 
 const RetirementGoal: React.FC = () => {
@@ -11,7 +11,7 @@ const RetirementGoal: React.FC = () => {
             </div>
             <div className="goal">
                 <p>
-                    Your ability to fund retirement at age 60 will be <strong>65%</strong>. Here are your financial status with <strong>strategies applied</strong>.
+                    Your ability to fund retirement at age 60 will be <strong>65%</strong>. Here are your financial status with strategies applied.
                 </p>
             </div>
             <ul>

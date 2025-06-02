@@ -30,7 +30,7 @@ const Toast: React.FC<i_toastProps> = (props) => {
         if (toast.show) {
             setTimeout(() => {
                 setToast({ ...toast, show: false });
-            }, 5000);
+            }, 3000);
         }
     }, [toast]);
 
