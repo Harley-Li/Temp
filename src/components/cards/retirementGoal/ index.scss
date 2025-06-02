@@ -1,0 +1,65 @@
+.retirement-goal {
+    display: flex;
+    column-gap: 2.5rem;
+    background-color: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    padding: 30px;
+    width: fit-content;
+    transition: width 0.3s linear;
+    width: 540px;
+    flex-wrap: wrap;
+    align-self: flex-start;
+
+    .goal-progress {
+        min-width: 12.5rem;
+        h2 {
+            font-size: 26px;
+            font-weight: 400;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+        }
+        .progress-val {
+            display: block;
+            text-align: center;
+            margin: -0.5rem auto;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+    }
+
+    .goal {
+        width: 15rem;
+        padding-top: 4rem;
+
+        p {
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+
+            strong {
+                font-weight: 600;
+            }
+        }
+    }
+
+    ul {
+        display: flex;
+        column-gap: 1.5rem;
+        min-width: 100%;
+
+        li {
+            display: flex;
+            column-gap: 0.25rem;
+            list-style: none;
+            line-height: 1.5;
+            font-size: .875rem;
+
+            span:nth-child(2) {
+                font-weight: 500;
+            }
+        }
+    }
+}

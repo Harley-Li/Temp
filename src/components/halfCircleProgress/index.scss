@@ -1,0 +1,169 @@
+.half-progress-container {
+    width: 12rem;
+    height: 8rem;
+    overflow: hidden;
+    position: relative;
+
+    * {
+        transition: transform .1s linear;
+    }
+
+    .half-circle-area {
+        width: 12rem;
+        height: 6rem;
+        overflow: hidden;
+        position: relative;
+
+        .degree-list {
+            width: 10rem;
+            height: 5rem;
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+
+            .degree {
+                width: 3px;
+                height: 1px;
+                border: .5px solid #666;
+                position: absolute;
+                bottom: 0;
+                left: .5rem;
+            }
+
+            @for $i from 1 through 20 {
+                .degree:nth-child(#{$i}) {
+                    transform: rotate(($i - 1) * 10deg);
+                    transform-origin: 4.5rem 0;
+                }
+            }
+        }
+    }
+
+    .pin {
+        width: 0;
+        height: 0;
+        position: absolute;
+        top: 1.875rem;
+        left: 89.5px;
+        border: 6px solid transparent;
+        border-bottom: 4rem solid red;
+        transform-origin: center calc(100% - 6px);
+        transform: rotate(-90deg);
+
+        &:before {
+            width: 12px;
+            height: 6px;
+            border-radius: 6px 6px 0 0;
+            background-color: red;
+            position: absolute;
+            display: block;
+            content: "";
+            left: -6px;
+            top: 64px;
+            transform: rotate(180deg);
+        }
+    }
+
+    .track-ball {
+        width: 12rem;
+        height: 6rem;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 4;
+        transform-origin: center bottom;
+
+        &:after {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background-color: red;
+            display: block;
+            position: absolute;
+            content: "";
+            left: 0;
+            bottom: -8px;
+        }
+
+        &:before {
+            width: .75rem;
+            height: .75rem;
+            border-radius: 50%;
+            background-color: #fff;
+            content: "";
+            display: block;
+            position: absolute;
+            left: 2px;
+            bottom: -6px;
+            z-index: 3;
+        }
+
+    }
+
+    .bg-circle {
+        box-sizing: border-box;
+        width: 12rem;
+        height: 12rem;
+        border-radius: 50%;
+        border: 1rem solid #ccc;
+        position: relative;
+        z-index: 2;
+
+        .bg-bar {
+            width: 12rem;
+            height: 12rem;
+            position: absolute;
+            top: -1rem;
+            left: -1rem;
+            border-left: 1rem solid red;
+            border-top: 1rem solid red;
+            border-bottom: 1rem solid transparent;
+            border-right: 1rem solid transparent;
+            border-radius: 50%;
+            transform: rotate(-135deg);
+        }
+    }
+
+    .side-ball {
+        width: 12rem;
+        height: 1rem;
+        position: absolute;
+        bottom: 1.5rem;
+        left: 0;
+        z-index: 2;
+
+        &:before,
+        &:after {
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background-color: red;
+            content: "";
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        &:after {
+            left: calc(100% - 1rem);
+            background-color: #ccc;
+        }
+    }
+
+    @for $i from 1 through 100 {
+        &[data-progress="#{$i}"] {
+            .bg-bar {
+                transform: rotate(calc(($i * 180deg)/100 - 135deg));
+            }
+
+            .track-ball {
+                transform: rotate(calc(($i * 180deg)/100));
+            }
+
+            .pin {
+                transform: rotate(calc(($i * 180deg)/100 - 90deg));
+            }
+        }
+    }
+}

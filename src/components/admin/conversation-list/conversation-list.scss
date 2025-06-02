@@ -1,0 +1,101 @@
+.conversation-history-container {
+    padding: 1.5rem 1rem;
+
+    .search-box {
+        width: 100%;
+        margin-bottom: 1.5rem;
+
+        input[type="search"] {
+            height: 3rem;
+            border-radius: 0.5rem;
+            width: 100%;
+            border: none;
+            box-shadow: 0 0 0.25rem 0 #ccc;
+        }
+    }
+
+    .conversation-list {
+        display: flex;
+        flex-direction: column;
+        margin-top: 1rem;
+        width: calc(100% + 2rem);
+        margin-left: -1rem;
+
+        .conversation {
+            display: flex;
+            column-gap: 1rem;
+            padding: 1rem;
+
+            &:hover {
+                background-color: #c9e5fc;
+                cursor: pointer;
+                border-radius: 0.25rem;
+                padding: 1rem 0.75rem;
+                margin: 0 0.25rem;
+            }
+
+            img {
+                width: 3rem;
+                height: 3rem;
+                border-radius: 50%;
+                object-fit: cover;
+            }
+
+            .direction {
+                flex-grow: 1;
+                .name {
+                    font-size: 0.875rem;
+                    margin-bottom: 0.75rem;
+                }
+
+                & > ul {
+                    display: flex;
+                    flex-wrap: wrap;
+                    row-gap: 1rem;
+                    column-gap: 0.75rem;
+
+                    & > li {
+                        height: 1.5rem;
+                        border-radius: 0.75rem;
+                        background-color: rgba($color: #000, $alpha: 0.05);
+                        padding: 0.25rem 0.75rem;
+                        font-size: 0.75rem;
+                        line-height: 1;
+                        list-style: none;
+                        display: inline-flex;
+                        align-items: center;
+                    }
+                }
+            }
+
+            .result {
+                min-width: 6rem;
+                text-align: right;
+
+                .date {
+                    font-size: 0.875rem;
+                    line-height: 1rem;
+                    color: #666;
+                    margin-bottom: 0.5rem;
+                    white-space: nowrap;
+                    display: flex;
+                    justify-content: space-between;
+                }
+
+                .star-container {
+                    display: inline-flex;
+                    column-gap: 0.125rem;
+                    .star {
+                        font-size: 1rem;
+                        display: inline-block;
+                        color: #ebebeb;
+
+                        &.filled {
+                            color: gold;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

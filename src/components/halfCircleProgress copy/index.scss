@@ -1,0 +1,114 @@
+.half-progress-container {
+    width: 10rem;
+    height: 10rem;
+    overflow: hidden;
+    position: relative;
+
+    *  {
+        transition: transform .1s linear;
+    }
+
+    .bg-circle {
+        box-sizing: border-box;
+        width: 10rem;
+        height: 10rem;
+        border-radius: 50%;
+        border: 1.25rem solid #ccc;
+        border-bottom: 1.25rem solid transparent;
+        position: relative;
+        z-index: 2;
+
+        .bg-bar {
+            width: 10rem;
+            height: 10rem;
+            position: absolute;
+            top: -1.25rem;
+            left: -1.25rem;
+            border-left: 1.25rem solid red;
+            border-bottom: 1.25rem solid transparent;
+            border-right: 1.25rem solid transparent;
+            border-top: 1.25rem solid transparent;
+            border-radius: 50%;
+            transform: rotate(-90deg);
+
+            &:after {
+                width: 1.25rem;
+                height: 1.25rem;
+                border-radius: 50%;
+                background-color: red;
+                content: "";
+                display: block;
+                position: absolute;
+                left: 1px;
+                top: 0px;
+            }
+        }
+    }
+
+    .side-ball {
+        width: 7rem;
+        height: 2.375rem;
+        position: absolute;
+        background: #e8eaec;
+        bottom: 0;
+        left: 1.5rem;
+        z-index: 2;
+
+        &:before,
+        &:after {
+            width: 1.25rem;
+            height: 1.25rem;
+            border-radius: 50%;
+            background-color: red;
+            content: "";
+            display: block;
+            position: absolute;
+            left: -4px;
+            top: calc(-3px);
+        }
+
+        &:after {
+            left: calc(100% - 16px);
+            background-color: #ccc;
+        }
+    }
+
+    @for $i from 1 through 100 {
+        &[data-progress="#{$i}"] {
+            $rotation: if($i <= 33, ($i * 2.7) - 90, 
+              if($i <= 66, ($i * 2.7) - 180, 
+              if($i <= 100, ($i * 2.7) - 270, 
+                   ($i * 2.7) - 360)));
+
+          
+                $ballLeft: 1px;
+                $ballTop: 0px;
+
+            @if $i > 33 and $i < 67 {
+                $ballLeft: 99px;
+                $ballTop: 0px;
+            } @else if $i >= 66 and $i < 100 {
+                $ballLeft: 99px;
+                $ballTop: 100px;
+            } 
+
+            .bg-bar {
+                border-bottom: 1.25rem solid transparent;
+                border-right: if($i >= 67, 1.25rem solid red, 1.25rem solid transparent);
+                border-top: if($i >= 34, 1.25rem solid red, 1.25rem solid transparent);
+                transform: rotate(#{$rotation}deg);
+
+                &:after {
+                    left: #{$ballLeft};
+                    top: #{$ballTop};
+                }
+            }
+
+           .side-ball {
+                &:after {
+                    background-color: if($i > 97, red, #ccc);
+                }
+            }
+        }
+    }
+}
