@@ -9,9 +9,9 @@ interface AssetItem {
 }
 
 const assets: AssetItem[] = [
-  { name: 'Equities', percentage: 60, color: '#449DD1' },
-  { name: 'Fixed Income', percentage: 26, color: '#1B3B5C' },
-  { name: 'Commodities', percentage: 14, color: '#A0B2C6' },
+  { name: 'Equities', percentage: 60, color: '#2B7CB3' },
+  { name: 'Fixed Income', percentage: 26, color: '#1D3B5F' },
+  { name: 'Commodities', percentage: 14, color: '#A8C5D9' },
   { name: 'Fund', percentage: 0, color: '#6A7B8E' },
 ];
 

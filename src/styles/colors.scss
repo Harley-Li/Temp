@@ -1,0 +1,33 @@
+// 主题色 - 蓝色系列
+$primary-blue: #2B7CB3;       // 主蓝色
+$dark-blue: #1D3B5F;          // 深蓝色
+$light-blue: #A8C5D9;         // 浅蓝色
+
+// 功能色
+$positive-color: #28a745;   // 积极数据（增长）
+$negative-color: #E64A45;         // 消极数据（下降）
+$neutral-color: #8A9BA8;          // 中性色
+
+// 文本色
+$text-primary: #2c3e50;       // 主要文本
+$text-secondary: #7f8c8d;     // 次要文本
+$text-light: #ffffff;         // 浅色文本
+
+// 背景色
+$bg-primary: #ffffff;         // 主要背景
+$bg-secondary: #f7f7f7;       // 次要背景
+$bg-highlight: rgba($primary-blue, 0.1); // 高亮背景
+
+// 边框色
+$border-light: #e0e0e0;       // 浅色边框
+
+// 图表颜色
+$chart-primary: $primary-blue;    // 主要图表颜色
+$chart-secondary: $dark-blue;     // 次要图表颜色
+$chart-tertiary: $light-blue;     // 第三图表颜色
+$chart-line: #d1d8df;            // 图表线条颜色
+$chart-dot: $primary-blue;       // 图表点颜色
+
+// 阴影
+$shadow-light: 0 4px 12px rgba(0, 0, 0, 0.05);
+$shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.1); 

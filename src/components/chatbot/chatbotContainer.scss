@@ -1,3 +1,5 @@
+@import '../../styles/colors.scss';
+
 .chatbot-container {
     width: 100%;
     height: 100%;
@@ -24,17 +26,16 @@
                 border-top-left-radius: 0;
 
                 * {
-                    color: #141414;
+                    color: $text-primary;
                 }
 
                 &:before {
                     position: absolute;
                     background-image: url("/chatbot/icons/ai.svg");
-                    background-color: #fff;
                     border-radius: 50%;
                     background-size: 1.5rem;
                     background-repeat: no-repeat;
-                    background-position: 0 0;
+                    background-position: center;
                     top: 1rem;
                     left: 0.5rem;
                     height: 1.5rem;
@@ -49,13 +50,14 @@
                 text-align: left;
                 border-radius: 0.75rem;
                 border-top-right-radius: 0;
-                background-color: #4169e1;
+                background-color: $primary-blue;
                 width: fit-content;
                 max-width: calc(100% - 5rem);
                 margin-left: auto;
+                box-shadow: $shadow-light;
 
                 * {
-                    color: #fff;
+                    color: $text-light;
                 }
 
                 &:before {
@@ -63,7 +65,7 @@
                     background-image: url("/chatbot/icons/chatbot_revert.svg");
                     background-size: 1.5rem;
                     background-repeat: no-repeat;
-                    background-position: 0 0;
+                    background-position: center;
                     top: 1rem;
                     right: 0.5rem;
                     height: 1.5rem;
@@ -85,14 +87,18 @@
         min-height: 6rem;
         margin: 1rem;
         position: relative;
-        border: 1px solid #ccc;
+        border: 1px solid $border-light;
         border-radius: 0.5rem;
         overflow: hidden;
         padding: 0.75rem;
 
-        &.active {
-            border-color: #141414;
+        &:has(textarea:focus) {
+            box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 20px 0px;
         }
+
+        // &.active {
+        //     border-color: $primary-blue;
+        // }
 
         & > textarea {
             line-height: 1.25;
@@ -101,14 +107,14 @@
             border: none;
             resize: none;
             outline: none !important;
+            color: $text-primary;
         }
 
         & .input-options {
             position: absolute;
             bottom: 0.5rem;
-            right: 0.5rem;
+            right: 0.75rem;
             display: flex;
-            width: 6.5rem;
             column-gap: 0.25rem;
 
             & > button {
@@ -116,7 +122,6 @@
                 width: 2rem;
                 border-radius: 0.25rem;
                 padding: 0;
-                width: 100%;
                 border: none;
                 background: none;
                 cursor: pointer;
@@ -127,34 +132,52 @@
                 &:focus,
                 &:focus-visible,
                 &:active {
-                    outline: 1px solid #ccc;
+                    outline: 1px solid $primary-blue;
                 }
 
                 &.search {
                     border-radius: 50%;
-                    background-color: rgba($color: #4169e1, $alpha: 0.9);
+                    background-color: $primary-blue;
                     background-image: url("/chatbot/icons/send.svg");
                     background-size: 1.25rem;
+                    transition: all 0.2s ease;
+                    
+                    &:hover {
+                        background-color: $dark-blue;
+                    }
                 }
-
+                
                 &.clear {
                     background-image: url("/chatbot/icons/clean.svg");
+                    background-size: 1.5rem;
+                    color: rgba($text-primary, 0.7);
+                    
+                    &:hover {
+                        opacity: 0.8;
+                        color: $text-primary;
+                    }
                 }
 
                 &.voice-input {
                     background-image: url("/chatbot/icons/voice.svg");
-                    background-size: 1.25rem;
+                    background-size: 1.5rem;
+                    color: rgba($text-primary, 0.7);
+                    
+                    &:hover {
+                        opacity: 0.8;
+                        color: $text-primary;
+                    }
                 }
             }
         }
     }
 }
 
-$dot-color: #000;
+$dot-color: $primary-blue;
 $dot-size: 0.5rem;
 $dot-margin: 0.125rem;
 $animation-duration: 1s;
-$text-color: #000;
+$text-color: $text-primary;
 $text-font-size: 1rem;
 
 .thinking-container {
@@ -205,5 +228,57 @@ $text-font-size: 1rem;
     }
     50% {
         opacity: 1;
+    }
+}
+
+.quick-replies-container {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 1.5rem;
+    row-gap: .25rem;
+    padding: 0 .75rem .5rem 1.25rem;
+
+    .quick-reply-button {
+        background-color: transparent;
+        border-radius: 0;
+        border: none;
+        color: $primary-blue;
+        padding: 0 0 2px 0;
+        cursor: pointer;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+
+        &::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: $primary-blue;
+            transition: width 0.3s ease-in-out;
+        }
+
+        &:hover {
+            color: $dark-blue;
+        }
+
+        &:hover::before {
+            width: 100%;
+        }
+
+        &::after {
+            content: "→";
+            margin-left: 0.5em;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+        }
+        
+        &:hover::after {
+            transform: translateX(3px);
+        }
     }
 }

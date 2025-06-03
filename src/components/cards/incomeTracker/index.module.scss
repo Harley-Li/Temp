@@ -1,16 +1,18 @@
+@import '../../../styles/colors.scss';
+
 // --- Variables ---
-$color-primary: #34495e; // Dark text/highlight color
-$color-secondary: #2c3e50; // Main title color
-$color-text-light: #7f8c8d; // Description/footer text
-$color-border-light: #e0e0e0; // Toggle button border
-$color-bg-light: #f0f0f0; // Icon container background
-$color-bg-hover: #f5f5f5; // Toggle button hover, chart column hover
-$color-bg-active: #e6e6e6; // Toggle button active
-$color-bg-highlight: #e6f2ff; // Highlighted column background
-$color-chart-line: #d1d8df; // Chart line color
-$color-chart-dot: #a4c9e4; // Chart dot color
+$color-primary: $primary-blue; // 修改为主蓝色
+$color-secondary: $text-primary; // 主标题颜色
+$color-text-light: $text-secondary; // 描述/页脚文本
+$color-border-light: $border-light; // 切换按钮边框
+$color-bg-light: #f0f0f0; // 图标容器背景
+$color-bg-hover: #f5f5f5; // 切换按钮悬停，图表列悬停
+$color-bg-active: #e6e6e6; // 切换按钮活动
+$color-bg-highlight: rgba($primary-blue, 0.1); // 高亮列背景
+$color-chart-line: $chart-line; // 图表线条颜色
+$color-chart-dot: $chart-dot; // 图表点颜色
 $color-white: #fff;
-$color-grey-bg: #f7f7f7; // App background
+$color-grey-bg: $bg-secondary; // 应用背景
 
 $spacing-xs: 5px;
 $spacing-sm: 10px;
@@ -52,7 +54,7 @@ $transition-ease-fast: ease;
 .card {
   background-color: $color-white;
   border-radius: $border-radius-lg;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: $shadow-light;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -246,7 +248,7 @@ $transition-ease-fast: ease;
     .percentageChange {
       font-size: 40px;
       font-weight: 600;
-      color: $color-secondary;
+      color: $text-primary; // 修改为主蓝色
     }
 
     .footerText {

@@ -45,7 +45,7 @@ const PensionDashboard: React.FC = () => {
                 <h3 className="card-title">Recent Contributions</h3>
                 <div className="card-item">
                     <div className="info-text">Your last contribution:</div>
-                    <div className="value-indicator positive">N/A</div>
+                    <div className="value-indicator">N/A</div>
                 </div>
 
                 <div className="card-item ">
