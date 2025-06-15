@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的当前位置 - 地图 App</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📍</text></svg>">
+
+    <!-- Leaflet CSS - 必须引入，用于地图样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAo9TchQCOfKKCPzzgpMGymPIQzSgkfKKFCvgYhY="
+        crossorigin="anonymous"/>
+
+    <style>
+        /* ==================================================================== */
+        /* CSS Styling */
+        /* ==================================================================== */
+        :root {
+            --primary-color: #6c63ff; /* 紫色 */
+            --accent-color: #4CAF50; /* 绿色 */
+            --error-color: #D32F2F; /* 红色 */
+            --bg-color: #f7f9fc; /* 浅灰色背景 */
+            --card-bg-color: #ffffff;
+            --text-color: #333;
+            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-medium: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --border-radius: 12px;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            width: 100%;
+            text-align: center;
+            box-shadow: var(--shadow-light);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 700;
+        }
+
+        .map-app-container {
+            background-color: var(--card-bg-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-medium);
+            width: 90%;
+            max-width: 800px; /* 限制最大宽度 */
+            padding: 25px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .map-status {
+            min-height: 200px; /* 确保有足够空间显示状态 */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.1em;
+            text-align: center;
+            color: #666;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: var(--border-radius);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .map-status.loading {
+            background-color: #eef2f6;
+            color: var(--primary-color);
+        }
+
+        .map-status.error {
+            background-color: #ffebe6; /* 浅红背景 */
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+        }
+
+        .map-status .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .map-status p {
+            margin: 5px 0;
+            line-height: 1.5;
+        }
+
+        /* 地图容器 */
+        #map {
+            height: 500px; /* 设置地图高度，可调整 */
+            width: 100%;
+            border-radius: var(--border-radius);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            overflow: hidden; /* 确保地图圆角 */
+            display: none; /* 初始隐藏，加载成功后显示 */
+        }
+
+        /* 底部信息 */
+        footer {
+            margin-top: 30px;
+            padding: 20px;
+            text-align: center;
+            color: #888;
+            font-size: 0.9em;
+            width: 100%;
+        }
+
+        footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* 移动设备适配 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            .map-app-container {
+                width: 95%;
+                padding: 15px;
+            }
+            #map {
+                height: 400px; /* 移动设备上可以适当降低高度 */
+            }
+            .map-status {
+                font-size: 1em;
+                min-height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>📍 我的当前位置</h1>
+    </header>
+
+    <div class="map-app-container">
+        <!-- 状态显示区域 (加载中/错误) -->
+        <div id="map-status" class="map-status loading">
+            <div class="spinner"></div>
+            <p>正在努力获取您的当前位置...</p>
+            <p style="font-size: 0.9em; color: #888;">请允许浏览器访问您的地理位置信息。</p>
+        </div>
+
+        <!-- 地图容器 -->
+        <div id="map"></div>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 当前位置地图 App | 基于 <a href="https://leafletjs.com/" target="_blank">Leaflet</a> 和 <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a></p>
+    </footer>
+
+    <!-- Leaflet JavaScript - 必须在自定义 JS 之前引入 -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20n6qqzJRzvaTMkjkGFHR2/a7Trh/3WSyFGmvYwkQ14="
+        crossorigin=""></script>
+
+    <script>
+        /* ==================================================================== */
+        /* JavaScript Logic */
+        /* ==================================================================== */
+
+        // 解决 Leaflet 默认图标在某些环境中无法显示的问题 (CDN 路径)
+        // 这是因为 Leaflet 默认查找图标的路径是相对的，而有时构建工具或服务器配置会导致路径错误。
+        // 通过合并选项，强制 Leaflet 使用 CDN 路径，确保图标正确显示。
+        delete L.Icon.Default.prototype._getIconUrl;
+        L.Icon.Default.mergeOptions({
+            iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+            iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+            shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        });
+
+        // DOM 元素引用
+        const mapDiv = document.getElementById('map');
+        const mapStatusDiv = document.getElementById('map-status');
+
+        let map = null; // Leaflet 地图实例
+        let currentMarker = null; // 当前位置标记实例
+
+        // 默认地图中心 (例如：巴黎，如果在获取用户位置前需要显示)
+        const defaultMapCenter = [48.8566, 2.3522]; // 巴黎
+        const defaultZoom = 13; // 默认缩放级别
+
+        /**
+         * 显示地图状态信息
+         * @param {string} type - 'loading', 'error', 'success'
+         * @param {string} message - 要显示的消息
+         * @param {string} [subMessage=''] - 次要消息
+         */
+        function showMapStatus(type, message, subMessage = '') {
+            mapStatusDiv.className = `map-status ${type}`; // 更新类名以应用样式
+            let content = '';
+
+            if (type === 'loading') {
+                content = `<div class="spinner"></div><p>${message}</p><p style="font-size: 0.9em; color: #888;">${subMessage}</p>`;
+                mapDiv.style.display = 'none'; // 加载时隐藏地图
+            } else if (type === 'error') {
+                content = `<p style="font-weight: bold;">😥 无法获取位置信息:</p><p>${message}</p><p style="font-size: 0.9em; margin-top: 10px;">${subMessage}</p>`;
+                mapDiv.style.display = 'none'; // 错误时隐藏地图
+            } else if (type === 'success') {
+                // 成功时隐藏状态面板，显示地图
+                mapStatusDiv.style.display = 'none';
+                mapDiv.style.display = 'block';
+                return; // 不更新内容，因为面板会被隐藏
+            }
+            mapStatusDiv.innerHTML = content;
+            mapStatusDiv.style.display = 'flex'; // 确保状态面板可见
+        }
+
+        /**
+         * 初始化地图
+         */
+        function initMap() {
+            // 如果地图已经初始化，则不再重复初始化
+            if (map) return;
+
+            map = L.map(mapDiv).setView(defaultMapCenter, defaultZoom);
+
+            // 添加 OpenStreetMap 瓦片层
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            getLocation(); // 尝试获取用户位置
+        }
+
+        /**
+         * 获取当前地理位置
+         */
+        function getLocation() {
+            showMapStatus('loading', '正在努力获取您的当前位置...', '请允许浏览器访问您的地理位置信息。');
+
+            if (!navigator.geolocation) {
+                showMapStatus('error', '抱歉，您的浏览器不支持地理位置服务。', '请尝试使用支持此功能的现代浏览器。');
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    const accuracy = position.coords.accuracy; // 位置精度，单位米
+
+                    showMapStatus('success'); // 隐藏状态面板，显示地图
+
+                    // 更新地图视图到当前位置并平滑过渡
+                    map.flyTo([lat, lng], defaultZoom + 2, { // 缩放级别略高，更聚焦
+                        animate: true,
+                        duration: 1.5 // 动画时长1.5秒
+                    });
+
+                    // 添加或更新标记
+                    if (currentMarker) {
+                        currentMarker.setLatLng([lat, lng]);
+                    } else {
+                        currentMarker = L.marker([lat, lng]).addTo(map);
+                    }
+
+                    // 设置标记的弹出信息
+                    const popupContent = `
+                        <b>您当前所在的位置！</b><br>
+                        纬度: ${lat.toFixed(6)}<br>
+                        经度: ${lng.toFixed(6)}<br>
+                        <small>精度: ±${accuracy.toFixed(2)} 米</small>
+                    `;
+                    currentMarker.bindPopup(popupContent).openPopup();
+
+                    // 可以添加一个圈，表示位置精度范围
+                    L.circle([lat, lng], {
+                        radius: accuracy, // 半径为精度值
+                        color: 'var(--primary-color)',
+                        fillColor: 'var(--primary-color)',
+                        fillOpacity: 0.1,
+                        weight: 2
+                    }).addTo(map);
+
+                },
+                (error) => {
+                    let errorMessage = '未知错误';
+                    let subMessage = '请尝试刷新页面或检查您的网络连接。';
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = '您已拒绝地理位置权限。';
+                            subMessage = '请在浏览器设置中允许定位，然后重试。';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = '位置信息不可用。';
+                            subMessage = '这可能是因为您的设备没有连接到Wi-Fi或GPS信号较弱。';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = '获取位置信息超时。';
+                            subMessage = '请确保您有稳定的网络连接，并重试。';
+                            break;
+                        default:
+                            errorMessage = `获取位置时发生错误: ${error.message}`;
+                            break;
+                    }
+                    showMapStatus('error', errorMessage, subMessage);
+                },
+                {
+                    enableHighAccuracy: true, // 尝试获取高精度位置
+                    timeout: 10000,           // 10秒后超时
+                    maximumAge: 0             // 不使用缓存位置
+                }
+            );
+        }
+
+        // 当 DOM 完全加载后，初始化地图和获取位置
+        document.addEventListener('DOMContentLoaded', initMap);
+
+    </script>
+</body>
+</html>

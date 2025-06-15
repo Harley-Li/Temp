@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WealthPath - Workplace Investment Service</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#FFC107',
+                        dark: '#1E293B',
+                        light: '#F8FAFC',
+                        success: '#22C55E',
+                        danger: '#EF4444',
+                        neutral: '#64748B'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                },
+            }
+        }
+    </script>
+
+    <!-- Custom Styles -->
+    <style type="text/tailwindcss">
+        @layer utilities { .content-auto { content-visibility: auto; } .text-shadow { text-shadow: 0 2px 4px rgba(0,0,0,0.1); } .bg-gradient-blue { background: linear-gradient(135deg, #165DFF 0%, #0A2463 100%); } .card-hover { transition: all 0.3s ease; } .card-hover:hover
+        { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); } .btn-hover { transition: all 0.2s ease; } .btn-hover:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0,
+        0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); } } .carousel-dot { width: 12px; height: 12px; background-color: #94a3b8; /* neutral-400 */ border-radius: 50%; transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); opacity: 0.6; } .carousel-dot.active
+        { width: 16px; height: 16px; background-color: #fff; /* primary */ border-radius: 14px; opacity: 1; }
+        #phone {
+            width: 11rem;
+        }
+        .form-bg:has(#successMessage:not(.hidden)) {
+            background-color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="font-inter bg-light text-dark h-screen w-screen overflow-hidden">
+
+    <nav id="navbar" class="fixed w-[100vw] top-0 z-50 transition-all duration-300 bg-transparent">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <i class="fa fa-line-chart text-2xl text-primary mr-2" style="color:#fff"></i>
+                        <span class="text-xl font-bold text-white text-shadow"
+                            style="margin-left: .5rem;">Fidelity</span>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-center space-x-4">
+                        <a href="#"
+                            class="text-white hover:text-secondary transition-colors px-3 py-2 rounded-md text-sm font-medium">Home</a>
+                        <a href="#"
+                            class="text-white hover:text-secondary transition-colors px-3 py-2 rounded-md text-sm font-medium">Services</a>
+                        <a href="#"
+                            class="text-white hover:text-secondary transition-colors px-3 py-2 rounded-md text-sm font-medium">About
+                            Us</a>
+                        <a href="#"
+                            class="text-white hover:text-secondary transition-colors px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+                        <a href="#" id="loginBtn"
+                            class="bg-transparent hover:bg-white/10 text-white border border-white px-4 py-2 rounded-md text-sm font-medium transition-all">Log
+                            In</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button type="button" id="mobileMenuBtn" class="text-white hover:text-secondary focus:outline-none">
+                        <i class="fa fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu, hidden by default -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white shadow-lg absolute w-full">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="#"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-primary/10">Home</a>
+                <a href="#"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-primary/10">Services</a>
+                <a href="#"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-primary/10">About
+                    Us</a>
+                <a href="#"
+                    class="block px-3 py-2 rounded-md text-base font-medium text-primary hover:bg-primary/10">Contact</a>
+                <a href="#"
+                    class="block px-3 py-2 rounded-md text-base font-medium bg-primary text-white hover:bg-primary/90">Log
+                    In</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="slide-container" class="w-[100vw] h-fit flex transition-transform duration-700 ease-in-out" style="min-height: 100vh;">
+        <!-- Hero Section -->
+        <header id="hero-section" class="relative bg-gradient-blue overflow-hidden w-screen h-full flex-shrink-0">
+            <div
+                class="absolute inset-0 bg-[url('https://picsum.photos/id/1070/1920/1080')] bg-cover bg-center opacity-10">
+            </div>
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                <div class="flex flex-col items-center justify-center min-h-screen pt-20 pb-16 md:py-32 text-center">
+                    <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold text-white leading-tight mb-6 text-shadow">
+                        Welcome to <span class="text-secondary">Fidelity</span> Workplace Investment
+                    </h1>
+                    <p class="text-[clamp(1rem,2vw,1.25rem)] text-white/90 max-w-3xl mb-10">
+                        Your all-in-one solution for workplace and personal investments. Start building your financial
+                        future today.
+                    </p>
+                    <div
+                        class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+                        <button id="getStartedBtn"
+                            class="btn-hover bg-secondary hover:bg-secondary/90 text-dark px-8 py-3 rounded-lg font-semibold shadow-lg">
+                            Get Started
+                        </button>
+                        <button
+                            class="btn-hover bg-transparent hover:bg-white/10 text-white border border-white px-8 py-3 rounded-lg font-semibold">
+                            Learn More
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" class="w-full h-auto">
+                    <path fill="#F8FAFC" fill-opacity="1"
+                        d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z">
+                    </path>
+                </svg>
+            </div>
+        </header>
+
+        <!-- Main Content Section -->
+        <main class="w-screen h-full overflow-y-auto flex-shrink-0 relative" style="min-height: 100vh;">
+            <!-- Backgrounds -->
+            <div id="main-backgrounds" class="absolute inset-0 z-0 pointer-events-none">
+                <div class="bg-image absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-in-out opacity-0"
+                    style="background-image: url('https://picsum.photos/id/1015/1920/1080');"></div>
+                <div class="bg-image absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-in-out opacity-0"
+                    style="background-image: url('https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1920');">
+                </div>
+                <div class="bg-image absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-in-out opacity-0"
+                    style="background-image: url('3.jpg');"></div>
+                <div class="bg-image absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-in-out opacity-0"
+                    style="background-image: url('4.jpg');"></div>
+                <!-- Overlay -->
+                <div class="absolute inset-0 bg-dark/70"></div>
+            </div>
+            <div class="relative z-10">
+                <div id="content-carousel-section" class="carousel-section relative bg-transparent py-12">
+                    <div id="contentCarousel" class="overflow-hidden">
+                        <div id="contentSlides" class="flex transition-transform duration-500 ease-in-out">
+                            <!-- Slide 1: Benefits -->
+                            <section id="benefits" class="w-full flex-shrink-0">
+                                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                                    <div class="text-center mb-8">
+                                        <h2 class="text-[clamp(1.5rem,3vw,2.2rem)] font-bold text-white mb-3">Why Choose
+                                            Our Investment Services</h2>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <!-- Retirement Planning -->
+                                        <div
+                                            class="card-hover bg-white rounded-xl shadow-md p-6 border-t-4 border-primary flex flex-col">
+                                            <div class="flex items-center mb-4">
+                                                <div
+                                                    class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                                    <i class="fa fa-pension text-xl text-primary"></i>
+                                                </div>
+                                                <h3 class="text-lg font-semibold text-dark">Retirement Planning</h3>
+                                            </div>
+                                            <p class="text-neutral text-sm mb-4 flex-grow">Our expert team will create a
+                                                personalized retirement plan tailored to your income, expenses, and risk
+                                                tolerance to ensure a secure future.</p>
+                                            <div class="mt-auto">
+                                                <img src="https://picsum.photos/id/1060/400/250"
+                                                    alt="Retirement lifestyle illustration"
+                                                    class="rounded-lg w-full h-48 object-cover">
+                                            </div>
+                                        </div>
+                                        <!-- PI & WI Integration -->
+                                        <div
+                                            class="card-hover bg-white rounded-xl shadow-md p-6 border-t-4 border-secondary flex flex-col">
+                                            <div class="flex items-center mb-4">
+                                                <div
+                                                    class="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                                    <i class="fa fa-sitemap text-xl text-secondary"></i>
+                                                </div>
+                                                <h3 class="text-lg font-semibold text-dark">PI & WI Integration</h3>
+                                            </div>
+                                            <p class="text-neutral text-sm mb-4 flex-grow">Seamlessly combine your
+                                                workplace and personal investments for optimal diversification and
+                                                enhanced returns through our unique integration service.</p>
+                                            <div class="mt-auto">
+                                                <div
+                                                    class="w-full h-48 bg-white border rounded-lg p-2 flex items-center justify-center">
+                                                    <canvas id="investmentChart"></canvas>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- AI-Powered Advisor -->
+                                        <div
+                                            class="card-hover bg-white rounded-xl shadow-md p-6 border-t-4 border-primary flex flex-col">
+                                            <div class="flex items-center mb-4">
+                                                <div
+                                                    class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                                    <i class="fa fa-robot text-xl text-primary"></i>
+                                                </div>
+                                                <h3 class="text-lg font-semibold text-dark">AI-Powered Advisor</h3>
+                                            </div>
+                                            <p class="text-neutral text-sm mb-4 flex-grow">Our advanced AI provides 24/7
+                                                personalized investment advice, dynamically adjusting your portfolio
+                                                based on market trends and your financial goals.</p>
+                                            <div class="mt-auto">
+                                                <img src="https://picsum.photos/id/180/400/250"
+                                                    alt="AI investment advisor illustration"
+                                                    class="rounded-lg w-full h-48 object-cover">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <!-- Slide 2: Testimonials -->
+                            <section id="feedback" class="w-full flex-shrink-0">
+                                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                                    <div class="text-center mb-8">
+                                        <h2 class="text-[clamp(1.5rem,3vw,2.2rem)] font-bold text-white mb-3">What Our
+                                            Clients Say</h2>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                                        <!-- Testimonial 1 -->
+                                        <div class="card-hover bg-white rounded-xl shadow-md p-8">
+                                            <div class="flex items-center mb-6">
+                                                <img src="https://picsum.photos/id/1027/100/100" alt="Client profile"
+                                                    class="w-16 h-16 rounded-full object-cover mr-4">
+                                                <div>
+                                                    <h4 class="font-semibold">Sarah Johnson</h4>
+                                                    <p class="text-sm text-neutral">Marketing Director, TechCorp</p>
+                                                </div>
+                                            </div>
+                                            <p class="text-neutral italic">"WealthPath's retirement planning service
+                                                helped me realize I was on track to retire 5 years earlier than
+                                                expected. Their AI advisor constantly monitors my portfolio and makes
+                                                adjustments - it's like having
+                                                a personal financial expert with me 24/7."
+                                            </p>
+                                            <div class="mt-6 text-secondary">
+                                                <i class="fa fa-star"></i><i class="fa fa-star"></i><i
+                                                    class="fa fa-star"></i><i class="fa fa-star"></i><i
+                                                    class="fa fa-star"></i>
+                                            </div>
+                                        </div>
+                                        <!-- Testimonial 2 -->
+                                        <div class="card-hover bg-white rounded-xl shadow-md p-8">
+                                            <div class="flex items-center mb-6">
+                                                <img src="https://picsum.photos/id/1012/100/100" alt="Client profile"
+                                                    class="w-16 h-16 rounded-full object-cover mr-4">
+                                                <div>
+                                                    <h4 class="font-semibold">Michael Chen</h4>
+                                                    <p class="text-sm text-neutral">Software Engineer, Innovate Inc</p>
+                                                </div>
+                                            </div>
+                                            <p class="text-neutral italic">"The integration of my workplace stock
+                                                options with my personal investments has been game-changing. My
+                                                portfolio has grown 18% in the past year alone!"</p>
+                                            <div class="mt-6 text-secondary">
+                                                <i class="fa fa-star"></i><i class="fa fa-star"></i><i
+                                                    class="fa fa-star"></i><i class="fa fa-star"></i><i
+                                                    class="fa fa-star-half-o"></i>
+                                            </div>
+                                        </div>
+                                        <!-- Testimonial 3 -->
+                                        <div class="card-hover bg-white rounded-xl shadow-md p-8">
+                                            <div class="flex items-center mb-6">
+                                                <img src="https://picsum.photos/id/1000/100/100" alt="Client profile"
+                                                    class="w-16 h-16 rounded-full object-cover mr-4">
+                                                <div>
+                                                    <h4 class="font-semibold">Emily Rodriguez</h4>
+                                                    <p class="text-sm text-neutral">HR Manager, Global Solutions</p>
+                                                </div>
+                                            </div>
+                                            <p class="text-neutral italic">"As someone new to investing, I was
+                                                overwhelmed. The onboarding process was so intuitive. Now I feel
+                                                confident about my financial future."</p>
+                                            <div class="mt-6 text-secondary">
+                                                <i class="fa fa-star"></i><i class="fa fa-star"></i><i
+                                                    class="fa fa-star"></i><i class="fa fa-star"></i><i
+                                                    class="fa fa-star"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <!-- Slide 3: Education -->
+                            <section id="education" class="w-full flex-shrink-0">
+                                <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                                    <div class="text-center mb-8">
+                                        <h2 class="text-[clamp(1.5rem,3vw,2.2rem)] font-bold text-white mb-3">
+                                            Comprehensive Investment Education and Support</h2>
+                                    </div>
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                        <!-- 投资课程 -->
+                                        <div
+                                            class="card-hover bg-white rounded-xl shadow-md p-6 border-t-4 border-secondary flex flex-col">
+                                            <div class="flex items-center mb-4">
+                                                <div
+                                                    class="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                                    <i class="fa fa-graduation-cap text-xl text-secondary"></i>
+                                                </div>
+                                                <h3 class="text-lg font-semibold text-dark">Investment Courses</h3>
+                                            </div>
+                                            <p class="text-neutral text-sm mb-4 flex-grow">Access a wide range of online
+                                                investment courses, from beginner to advanced levels.</p>
+                                            <div class="mt-auto">
+                                                <img src="https://picsum.photos/id/1024/400/250"
+                                                    alt="Investment courses illustration"
+                                                    class="rounded-lg w-full h-48 object-cover">
+                                            </div>
+                                        </div>
+                                        <!-- 专家咨询 -->
+                                        <div
+                                            class="card-hover bg-white rounded-xl shadow-md p-6 border-t-4 border-primary flex flex-col">
+                                            <div class="flex items-center mb-4">
+                                                <div
+                                                    class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                                    <i class="fa fa-users text-xl text-primary"></i>
+                                                </div>
+                                                <h3 class="text-lg font-semibold text-dark">Expert Consultation</h3>
+                                            </div>
+                                            <p class="text-neutral text-sm mb-4 flex-grow">Schedule one-on-one
+                                                consultations with our investment experts for personalized advice.</p>
+                                            <div class="mt-auto">
+                                                <img src="https://picsum.photos/id/1032/400/250"
+                                                    alt="Expert consultation illustration"
+                                                    class="rounded-lg w-full h-48 object-cover">
+                                            </div>
+                                        </div>
+                                        <!-- 社区支持 -->
+                                        <div
+                                            class="card-hover bg-white rounded-xl shadow-md p-6 border-t-4 border-secondary flex flex-col">
+                                            <div class="flex items-center mb-4">
+                                                <div
+                                                    class="w-12 h-12 bg-secondary/10 rounded-full flex items-center justify-center mr-4 flex-shrink-0">
+                                                    <i class="fa fa-comments text-xl text-secondary"></i>
+                                                </div>
+                                                <h3 class="text-lg font-semibold text-dark">Community Support</h3>
+                                            </div>
+                                            <p class="text-neutral text-sm mb-4 flex-grow">Join our investment community
+                                                to connect with other investors and share experiences.</p>
+                                            <div class="mt-auto">
+                                                <img src="https://picsum.photos/id/1037/400/250"
+                                                    alt="Community support illustration"
+                                                    class="rounded-lg w-full h-48 object-cover">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+                    <!-- Carousel Controls -->
+                    <!-- Dots Navigation -->
+                    <div id="contentCarouselDots"
+                        class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-3 items-end h-10">
+                    </div>
+                </div>
+
+                <!-- Registration Flow Section -->
+                <section id="registration" class="py-12 bg-transparent">
+                    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                        <div class="max-w-7xl mx-auto">
+                            <div class="text-center mb-16">
+                                <h2 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-white mb-4">Start Your
+                                    Investment Journey Today</h2>
+                            </div>
+
+                            <!-- Registration Steps -->
+                            <div class="flex flex-col md:flex-row md:gap-x-12 lg:gap-x-16">
+                                <!-- Left: Vertical Stepper -->
+                                <div id="stepper-column" class="relative mb-12 md:mb-0 md:w-52 flex-shrink-0">
+                                    <!-- Vertical progress bar for desktop -->
+                                    <div class="hidden md:block absolute top-0 left-6 h-full w-1 bg-gray-200 z-0">
+                                        <div id="progressBar" class="w-full bg-primary transition-all duration-500"
+                                            style="height: 0%;"></div>
+                                    </div>
+                                    <!-- Horizontal progress bar for mobile -->
+                                    <div class="block md:hidden absolute top-6 left-0 w-full h-1 bg-gray-200 z-0">
+                                        <div id="mobileProgressBar"
+                                            class="h-full bg-primary transition-all duration-500" style="width: 0%;">
+                                        </div>
+                                    </div>
+                                    <div id="steps-indicator-container"
+                                        class="relative z-10 flex flex-row md:flex-col justify-between md:h-full">
+                                        <!-- Step 1 Indicator -->
+                                        <div id="step1Indicator"
+                                            class="flex flex-col md:flex-row items-center text-center md:text-left">
+                                            <div
+                                                class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center md:mr-4 mb-2 md:mb-0 flex-shrink-0">
+                                                <i class="fa fa-user"></i>
+                                            </div>
+                                            <span class="text-sm font-medium text-white">Verify Your Identity</span>
+                                        </div>
+                                        <!-- Step 2 Indicator -->
+                                        <div id="step2Indicator"
+                                            class="flex flex-col md:flex-row items-center text-center md:text-left">
+                                            <div
+                                                class="w-12 h-12 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center md:mr-4 mb-2 md:mb-0 flex-shrink-0">
+                                                <i class="fa fa-line-chart"></i>
+                                            </div>
+                                            <span class="text-sm font-medium text-white">Investment Style</span>
+                                        </div>
+                                        <!-- Step 3 Indicator -->
+                                        <div id="step3Indicator"
+                                            class="flex flex-col md:flex-row items-center text-center md:text-left">
+                                            <div
+                                                class="w-12 h-12 rounded-full bg-gray-200 text-gray-500 flex items-center justify-center md:mr-4 mb-2 md:mb-0 flex-shrink-0">
+                                                <i class="fa fa-lock"></i>
+                                            </div>
+                                            <span class="text-sm font-medium text-white">Account Setup</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Right: Form Content -->
+                                <div class="flex-grow">
+                                    <div class="bg-white rounded-xl shadow-xl overflow-hidden form-bg">
+                                        <!-- Step 1: Basic Information -->
+                                        <div id="step1" class="p-8 transition-all duration-500">
+                                            <h3 class="text-xl font-semibold mb-6">Let's verify your identity</h3>
+
+                                            <form id="basicInfoForm">
+                                                <div class="mb-6">
+                                                    <label for="refNumber"
+                                                        class="block text-sm font-medium text-gray-700 mb-1">Reference
+                                                        Number</label>
+                                                    <input type="text" id="refNumber" name="refNumber"
+                                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                                        placeholder="Enter your reference number">
+                                                </div>
+
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4">
+                                                    <div>
+                                                        <label for="phone"
+                                                            class="block text-sm font-medium text-gray-700 mb-1">Phone
+                                                            Number</label>
+                                                        <div class="flex items-center space-x-2">
+                                                            <input type="tel" id="phone" name="phone"
+                                                                class="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                                                placeholder="Enter phone number">
+                                                            <button type="button"
+                                                                class="btn-hover bg-secondary hover:bg-secondary/90 text-dark px-4 py-2 rounded-lg font-medium text-sm flex-shrink-0">Send
+                                                                Code</button>
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <label for="verifyCode"
+                                                            class="block text-sm font-medium text-gray-700 mb-1">Verify
+                                                            Code</label>
+                                                        <input type="tel" id="verifyCode" name="verifyCode"
+                                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                                            placeholder="Enter verification code">
+                                                    </div>
+                                                </div>
+
+                                                <div class="flex justify-end mt-8">
+                                                    <button type="button" id="step1NextBtn"
+                                                        class="btn-hover bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg font-medium">
+                                                        Continue <i class="fa fa-arrow-right ml-2"></i>
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <!-- Step 2: Investment Style -->
+                                        <div id="step2" class="p-8 hidden transition-all duration-500">
+                                            <h3 class="text-xl font-semibold mb-6">Define Your Investment Style</h3>
+                                            <p class="text-neutral mb-6">Select your risk preference to help us create
+                                                the perfect investment strategy for you.</p>
+
+                                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
+                                                <div class="p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-all h-full"
+                                                    id="conservativeOption">
+                                                    <div class="flex items-start">
+                                                        <div class="mt-0.5">
+                                                            <input type="radio" name="riskPreference" id="conservative"
+                                                                value="conservative"
+                                                                class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
+                                                        </div>
+                                                        <div class="ml-3">
+                                                            <label for="conservative"
+                                                                class="block text-sm font-medium text-gray-700 cursor-pointer">Conservative</label>
+                                                            <p class="text-sm text-neutral mt-1">Focus on preserving
+                                                                capital with low-risk investments. Suitable for those
+                                                                with a low tolerance for market volatility.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-all h-full"
+                                                    id="balancedOption">
+                                                    <div class="flex items-start">
+                                                        <div class="mt-0.5">
+                                                            <input type="radio" name="riskPreference" id="balanced"
+                                                                value="balanced"
+                                                                class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
+                                                        </div>
+                                                        <div class="ml-3">
+                                                            <label for="balanced"
+                                                                class="block text-sm font-medium text-gray-700 cursor-pointer">Balanced</label>
+                                                            <p class="text-sm text-neutral mt-1">A mix of growth and
+                                                                stability. Balances risk and reward for moderate market
+                                                                fluctuations.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="p-3 border border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-all h-full"
+                                                    id="aggressiveOption">
+                                                    <div class="flex items-start">
+                                                        <div class="mt-0.5">
+                                                            <input type="radio" name="riskPreference" id="aggressive"
+                                                                value="aggressive"
+                                                                class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
+                                                        </div>
+                                                        <div class="ml-3">
+                                                            <label for="aggressive"
+                                                                class="block text-sm font-medium text-gray-700 cursor-pointer">Aggressive</label>
+                                                            <p class="text-sm text-neutral mt-1">Higher risk for
+                                                                potentially higher returns. Focuses on growth
+                                                                investments with significant market exposure.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex justify-between">
+                                                <button type="button" id="step2PrevBtn"
+                                                    class="btn-hover bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-medium">
+                                                    <i class="fa fa-arrow-left mr-2"></i> Back
+                                                </button>
+                                                <button type="button" id="step2NextBtn"
+                                                    class="btn-hover bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg font-medium">
+                                                    Continue <i class="fa fa-arrow-right ml-2"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- Step 3: Account Creation -->
+                                        <div id="step3" class="p-8 hidden transition-all duration-500">
+                                            <h3 class="text-xl font-semibold mb-6">Create Your Account</h3>
+                                            <form id="accountForm">
+                                                <div class="mb-4">
+                                                    <label for="username"
+                                                        class="block text-sm font-medium text-gray-700 mb-1">Username</label>
+                                                    <input type="text" id="username" name="username"
+                                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                                        placeholder="Choose a username">
+                                                </div>
+
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 mb-4">
+                                                    <div>
+                                                        <label for="password"
+                                                            class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                                                        <input type="password" id="password" name="password"
+                                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                                            placeholder="Create a strong password">
+                                                    </div>
+                                                    <div>
+                                                        <label for="confirmPassword"
+                                                            class="block text-sm font-medium text-gray-700 mb-1">Confirm
+                                                            Password</label>
+                                                        <input type="password" id="confirmPassword"
+                                                            name="confirmPassword"
+                                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                                                            placeholder="Confirm your password">
+                                                    </div>
+                                                </div>
+                                                <p class="text-xs text-neutral mb-6">Password must be at least 8
+                                                    characters long, include uppercase and lowercase letters, numbers,
+                                                    and special characters.
+                                                </p>
+
+                                                <div class="flex justify-between">
+                                                    <button type="button" id="step3PrevBtn"
+                                                        class="btn-hover bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg font-medium">
+                                                        <i class="fa fa-arrow-left mr-2"></i> Back
+                                                    </button>
+                                                    <button type="button" id="registerBtn"
+                                                        class="btn-hover bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg font-medium">
+                                                        Complete Registration
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                        <!-- Success Message -->
+                                        <div id="successMessage" class="p-8 hidden text-center">
+                                            <div
+                                                class="w-20 h-20 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                                                <i class="fa fa-check text-3xl text-success"></i>
+                                            </div>
+                                            <h3 class="text-2xl font-bold text-dark mb-4">Registration Successful!</h3>
+                                            <p class="text-neutral mb-8">Your account has been created. Welcome to the
+                                                WealthPath investment community!</p>
+                                            <div class="bg-primary/5 rounded-lg p-6 mb-8 max-w-md mx-auto">
+                                                <h4 class="font-semibold mb-2">What's next?</h4>
+                                                <ul class="text-left space-y-2">
+                                                    <li class="flex items-start">
+                                                        <i class="fa fa-check-circle text-success mt-1 mr-2"></i>
+                                                        <span>Complete your profile with additional details</span>
+                                                    </li>
+                                                    <li class="flex items-start">
+                                                        <i class="fa fa-check-circle text-success mt-1 mr-2"></i>
+                                                        <span>Link your bank account for seamless transfers</span>
+                                                    </li>
+                                                    <li class="flex items-start">
+                                                        <i class="fa fa-check-circle text-success mt-1 mr-2"></i>
+                                                        <span>Explore personalized investment recommendations</span>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                            <button type="button" id="loginNowBtn"
+                                                class="btn-hover bg-primary hover:bg-primary/90 text-white px-8 py-3 rounded-lg font-semibold">
+                                                Log in to Your Account
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Slide functionality
+        const getStartedBtn = document.getElementById('getStartedBtn');
+        const slideContainer = document.getElementById('slide-container');
+        const navbar = document.getElementById('navbar');
+
+        if (getStartedBtn && slideContainer && navbar) {
+            getStartedBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                slideContainer.style.transform = 'translateX(-100vw)';
+                navbar.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+                document.body.classList.add('overflow-y-auto', 'overflow-x-hidden');
+            });
+        }
+
+        // Registration Flow
+        const steps = ['step1', 'step2', 'step3'];
+        const indicators = ['step1Indicator', 'step2Indicator', 'step3Indicator'];
+        let currentStep = 0;
+
+        const backgroundImages = document.querySelectorAll('#main-backgrounds .bg-image');
+
+        function updateBackground(index) {
+            if (backgroundImages.length >= steps.length) {
+                backgroundImages.forEach((bg, i) => {
+                    if (i === index) {
+                        bg.classList.add('opacity-100');
+                        bg.classList.remove('opacity-0');
+                    } else {
+                        bg.classList.add('opacity-0');
+                        bg.classList.remove('opacity-100');
+                    }
+                });
+            }
+        }
+
+        // Get all step elements and buttons
+        const stepElements = steps.map(id => document.getElementById(id));
+        const indicatorElements = indicators.map(id => document.getElementById(id));
+        const progressBar = document.getElementById('progressBar');
+        const mobileProgressBar = document.getElementById('mobileProgressBar');
+
+        // Function to update step indicators
+        function updateStepIndicators(step) {
+            if (!progressBar || !mobileProgressBar) return;
+            indicatorElements.forEach((indicator, index) => {
+                if (!indicator) return;
+                const circle = indicator.querySelector('div');
+                if (index < step) {
+                    circle.classList.remove('bg-gray-200', 'text-gray-500');
+                    circle.classList.add('bg-success', 'text-white');
+                } else if (index === step) {
+                    circle.classList.remove('bg-gray-200', 'text-gray-500');
+                    circle.classList.add('bg-primary', 'text-white');
+                } else {
+                    circle.classList.remove('bg-primary', 'text-white', 'bg-success');
+                    circle.classList.add('bg-gray-200', 'text-gray-500');
+                }
+            });
+
+            // Update progress bar
+            const percentage = (step / (steps.length - 1)) * 100;
+            progressBar.style.height = `${percentage}%`;
+            mobileProgressBar.style.width = `${percentage}%`;
+        }
+
+        // Function to show a specific step
+        function showStep(step) {
+            stepElements.forEach((element, index) => {
+                if (element) {
+                    if (index === step) {
+                        element.classList.remove('hidden');
+                    } else {
+                        element.classList.add('hidden');
+                    }
+                }
+            });
+            updateStepIndicators(step);
+            updateBackground(step);
+            currentStep = step;
+        }
+
+        // Add event listeners for continue buttons
+        document.getElementById('step1NextBtn')?.addEventListener('click', () => showStep(1));
+        document.getElementById('step2NextBtn')?.addEventListener('click', () => showStep(2));
+        document.getElementById('step2PrevBtn')?.addEventListener('click', () => showStep(0));
+        document.getElementById('step3PrevBtn')?.addEventListener('click', () => showStep(1));
+
+        document.getElementById('registerBtn')?.addEventListener('click', () => {
+            const step3 = document.getElementById('step3');
+            const successMessage = document.getElementById('successMessage');
+            const stepperColumn = document.getElementById('stepper-column');
+            const carouselSection = document.getElementById('content-carousel-section');
+
+            if (step3) step3.classList.add('hidden');
+            if (successMessage) successMessage.classList.remove('hidden');
+            if (stepperColumn) stepperColumn.classList.add('hidden');
+            if (carouselSection) carouselSection.classList.add('hidden');
+
+            // Show success background
+            if (backgroundImages.length >= 4) {
+                backgroundImages.forEach((bg, i) => {
+                    if (i === 3) { // 4th image for success
+                        bg.classList.add('opacity-100');
+                        bg.classList.remove('opacity-0');
+                    } else {
+                        bg.classList.add('opacity-0');
+                        bg.classList.remove('opacity-100');
+                    }
+                });
+            }
+        });
+
+        // Initialize the first step
+        if (stepElements.some(el => el !== null)) {
+            showStep(0);
+        }
+
+        // Content Carousel in Main Section
+        const contentSlidesContainer = document.getElementById('contentSlides');
+        if (contentSlidesContainer) {
+            const carouselSection = document.getElementById('content-carousel-section');
+            const dotsContainer = document.getElementById('contentCarouselDots');
+            const slides = Array.from(contentSlidesContainer.children);
+            const totalSlides = slides.length;
+            let currentContentIndex = 0;
+            let contentInterval;
+
+            // Create dots
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('button');
+                dot.classList.add('carousel-dot');
+                dot.dataset.index = i;
+                dotsContainer.appendChild(dot);
+            }
+            const carouselDots = Array.from(dotsContainer.children);
+
+            const updateCarousel = (index) => {
+                // Loop around
+                if (index < 0) {
+                    currentContentIndex = totalSlides - 1;
+                } else if (index >= totalSlides) {
+                    currentContentIndex = 0;
+                } else {
+                    currentContentIndex = index;
+                }
+
+                const offset = -currentContentIndex * 100;
+                contentSlidesContainer.style.transform = `translateX(${offset}%)`;
+
+                // Update dots
+                carouselDots.forEach((dot, i) => {
+                    if (i === currentContentIndex) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            };
+
+            const nextContentSlide = () => {
+                updateCarousel(currentContentIndex + 1);
+            };
+
+            const resetInterval = () => {
+                clearInterval(contentInterval);
+                contentInterval = setInterval(nextContentSlide, 5000);
+            };
+
+            // Event listeners
+            carouselDots.forEach(dot => {
+                dot.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.dataset.index);
+                    updateCarousel(index);
+                    resetInterval();
+                });
+            });
+
+            carouselSection.addEventListener('mouseenter', () => {
+                clearInterval(contentInterval);
+            });
+
+            carouselSection.addEventListener('mouseleave', () => {
+                resetInterval();
+            });
+
+            // Initial setup
+            updateCarousel(0);
+            resetInterval(); // Start autoplay
+        }
+    </script>
+</body>
+
+</html>

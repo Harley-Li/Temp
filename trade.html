@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 投资顾问 - NVDA 股票分析 (完整版)</title>
+    <!-- 引入 ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            --bg-color: #f7f8fc;
+            --app-bg: #ffffff;
+            --chat-bg: #f0f2f5;
+            --ai-bubble-bg: #e9e9eb;
+            --user-bubble-bg: #007aff;
+            --user-text-color: #ffffff;
+            --text-color-primary: #0d0d0d;
+            --text-color-secondary: #65676b;
+            --border-color: #e5e5e5;
+            --accent-color: #007aff;
+            --danger-color: #f44336;
+            --warning-color: #ff9800;
+            --success-color: #4caf50;
+            --info-color: #2196f3;
+            --border-radius-m: 18px;
+            --border-radius-l: 24px;
+            --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.05), 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* General Styles */
+        html { box-sizing: border-box; }
+        *, *:before, *:after { box-sizing: inherit; }
+        body {
+            font-family: var(--font-family);
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--text-color-primary);
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 800px;
+            height: 95vh;
+            max-height: 860px;
+            background-color: var(--app-bg);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-radius: var(--border-radius-l);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Chat Window */
+        #chat-window {
+            flex-grow: 1;
+            padding: 20px 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background-color: var(--chat-bg);
+            scroll-behavior: smooth;
+        }
+        #chat-window::-webkit-scrollbar { width: 6px; }
+        #chat-window::-webkit-scrollbar-track { background: transparent; }
+        #chat-window::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+        .message-container {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            max-width: 85%;
+            padding: 0 10px;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .message-container.user { align-self: flex-end; flex-direction: row-reverse; }
+        .message-container.ai { align-self: flex-start; }
+
+        .avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            font-weight: 500; font-size: 14px; color: #fff; flex-shrink: 0;
+            background-color: var(--accent-color);
+        }
+        .avatar.user { background-color: var(--success-color); }
+
+        .chat-bubble {
+            padding: 12px 18px; border-radius: var(--border-radius-m);
+            word-wrap: break-word; line-height: 1.5; box-shadow: var(--shadow-soft);
+        }
+        .ai .chat-bubble { background-color: var(--app-bg); border-bottom-left-radius: 4px; }
+        .user .chat-bubble { background-color: var(--user-bubble-bg); color: var(--user-text-color); border-bottom-right-radius: 4px; }
+        .chat-bubble p:first-child { margin-top: 0; }
+        .chat-bubble p:last-child { margin-bottom: 0; }
+
+        /* Input Area */
+        #input-area {
+            display: flex; align-items: center; padding: 12px 20px;
+            border-top: 1px solid var(--border-color); background-color: var(--app-bg);
+        }
+        #user-input {
+            flex-grow: 1; padding: 12px 18px; border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-l); font-size: 16px; background: var(--chat-bg);
+            outline: none; resize: none; max-height: 120px; line-height: 1.4;
+            transition: border-color 0.2s;
+        }
+        #user-input:focus { border-color: var(--accent-color); }
+        #send-button {
+            background-color: var(--accent-color); color: white; border: none;
+            border-radius: 50%; width: 44px; height: 44px; cursor: pointer; margin-left: 10px;
+            flex-shrink: 0; display: flex; justify-content: center; align-items: center;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        #send-button:hover { background-color: #0056b3; }
+        #send-button:active { transform: scale(0.95); }
+        #send-button svg { width: 24px; height: 24px; }
+
+        /* --- Integrated UI Components --- */
+        .ui-component-wrapper { margin-top: 15px; padding-top: 15px; border-top: 1px solid #e0e0e0; }
+        .chart-container {
+            width: 100%;
+            height: 250px; /* ECharts requires a defined height */
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #fcfcfc;
+            margin-bottom: 10px;
+        }
+        .data-highlight-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .data-tag {
+            padding: 6px 12px; border-radius: 16px; font-size: 13px;
+            font-weight: 500; color: #fff; background-color: var(--danger-color);
+        }
+        .data-tag.warning { background-color: var(--warning-color); }
+        .data-tag.sell { background-color: #c2185b; }
+        
+        .info-card-trigger { color: var(--accent-color); cursor: pointer; text-decoration: none; font-weight: 500; border-bottom: 1px dashed var(--accent-color); }
+        .info-card { background-color: #e8f0fe; border-left: 4px solid var(--accent-color); padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 14px; animation: slideDown 0.4s ease-out; }
+        .info-card h4 { margin: 0 0 8px; color: var(--accent-color); }
+        .info-card p { margin-bottom: 0; }
+        .tech-indicator-panel { background-color: #fff3f3; border-left: 4px solid var(--danger-color); padding: 12px; border-radius: 8px; margin-top: 12px; }
+        .tech-indicator-panel h4 { margin: 0 0 8px; color: var(--danger-color); }
+        .tech-indicator-panel ul { list-style-type: '— '; padding-left: 20px; margin: 0; }
+        .tech-indicator-panel li { margin-bottom: 5px; font-size: 14px; color: var(--text-color-secondary); }
+        .tech-indicator-panel .signal-highlight { font-weight: bold; color: var(--danger-color); }
+        .action-buttons-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .action-button { background-color: var(--success-color); color: white; border: none; border-radius: 10px; padding: 12px; cursor: pointer; font-size: 14px; font-weight: 500; text-align: center; transition: all 0.2s ease; }
+        .action-button:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .action-button.buy { background-color: var(--info-color); }
+        .action-button.stoploss { background-color: var(--warning-color); }
+        .action-button.more { background-color: #909090; }
+        .simulator-calculator { padding: 15px; background-color: #f0f9f2; border-left: 4px solid var(--success-color); border-radius: 8px; margin-top: 15px; }
+        .simulator-calculator h4 { margin: 0 0 10px; color: var(--success-color); }
+        .simulator-calculator label { display: block; margin-bottom: 8px; font-weight: 500; font-size: 14px; }
+        input[type="range"] { width: 100%; -webkit-appearance: none; appearance: none; height: 6px; background: #ddd; outline: none; border-radius: 3px; background-image: linear-gradient(var(--success-color), var(--success-color)); background-size: 0% 100%; background-repeat: no-repeat; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--success-color); cursor: pointer; box-shadow: 0 0 0 3px #fff, 0 0 5px rgba(0,0,0,0.2); margin-top: -7px; }
+        .simulator-calculator .result-display { font-size: 14px; margin-top: 15px; padding: 10px; background-color: #fff; border: 1px solid #d0e0d0; border-radius: 5px; color: var(--text-color-secondary); line-height: 1.6; }
+        .simulator-calculator .result-display strong { color: var(--accent-color); font-weight: 600; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s 0.3s; }
+        .modal-overlay.active { opacity: 1; visibility: visible; transition-delay: 0s; }
+        .modal-content { background-color: var(--app-bg); padding: 25px 30px; border-radius: var(--border-radius-l); width: 90%; max-width: 400px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15); text-align: center; transform: scale(0.95); transition: transform 0.3s ease; }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-content h3 { color: var(--danger-color); margin: 0 0 15px; font-size: 20px; }
+        .modal-content p { font-size: 16px; line-height: 1.6; margin: 0 0 20px; color: var(--text-color-secondary); }
+        .modal-content .expected-profit { font-size: 18px; font-weight: 600; color: var(--success-color); margin-bottom: 20px; }
+        .modal-content .disclaimer { display: flex; align-items: center; text-align: left; margin-bottom: 25px; font-size: 14px; color: #777; }
+        .modal-content .disclaimer input[type="checkbox"] { margin-right: 10px; transform: scale(1.2); }
+        .modal-content .modal-buttons { display: flex; gap: 15px; justify-content: center; }
+        .modal-button { padding: 10px 20px; flex-grow: 1; border: none; border-radius: var(--border-radius-l); cursor: pointer; font-size: 16px; font-weight: 500; transition: all 0.2s ease; }
+        .modal-button.confirm { background-color: var(--danger-color); color: white; }
+        .modal-button.cancel { background-color: #eee; color: var(--text-color-secondary); }
+        .modal-button:disabled { background-color: #ccc; cursor: not-allowed; }
+        .typing-indicator { display: flex; align-items: center; gap: 4px; }
+        .typing-indicator span { width: 8px; height: 8px; background-color: #b0b0b0; border-radius: 50%; animation: bounce 1.2s infinite ease-in-out; }
+        .typing-indicator span:nth-of-type(2) { animation-delay: -1.0s; }
+        .typing-indicator span:nth-of-type(3) { animation-delay: -0.8s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <div id="chat-window"></div>
+        <div id="input-area">
+            <textarea id="user-input" placeholder="输入您的问题..." rows="1"></textarea>
+            <button id="send-button" title="发送">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <div id="risk-confirmation-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-title">风险确认</h3>
+            <p id="modal-action-description">您即将执行一项交易操作。</p>
+            <p class="expected-profit" id="modal-expected-profit">预计盈亏：$0</p>
+            <div class="disclaimer">
+                <input type="checkbox" id="understand-risk-checkbox">
+                <label for="understand-risk-checkbox">我已充分了解市场风险并确认执行此操作。</label>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-button cancel" id="modal-cancel-button">取消</button>
+                <button class="modal-button confirm" id="modal-confirm-button" disabled>确认操作</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Element Declarations ---
+        const chatWindow = document.getElementById('chat-window');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+        const modalOverlay = document.getElementById('risk-confirmation-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalActionDescription = document.getElementById('modal-action-description');
+        const modalExpectedProfit = document.getElementById('modal-expected-profit');
+        const understandRiskCheckbox = document.getElementById('understand-risk-checkbox');
+        const modalConfirmButton = document.getElementById('modal-confirm-button');
+        const modalCancelButton = document.getElementById('modal-cancel-button');
+
+        // --- State Variables ---
+        let currentScenario = 0;
+        let isAITyping = false;
+        let chartInstances = [];
+
+        // --- Core UI Functions ---
+        function scrollToBottom() { chatWindow.scrollTop = chatWindow.scrollHeight; }
+
+        function showTypingIndicator() {
+            if (isAITyping) return;
+            isAITyping = true;
+            const typingHtml = `<div class="message-container ai" id="typing-indicator"><div class="avatar ai">AI</div><div class="chat-bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div></div>`;
+            chatWindow.insertAdjacentHTML('beforeend', typingHtml);
+            scrollToBottom();
+        }
+
+        function hideTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) indicator.remove();
+            isAITyping = false;
+        }
+
+        function addUserMessage(text) {
+            const messageHtml = `<div class="message-container user"><div class="chat-bubble">${text}</div><div class="avatar user">您</div></div>`;
+            chatWindow.insertAdjacentHTML('beforeend', messageHtml);
+            scrollToBottom();
+        }
+        
+        function addAiMessage(text, uiConfig = null) {
+            hideTypingIndicator();
+            const uiHtml = (uiConfig && uiConfig.html) ? `<div class="ui-component-wrapper">${uiConfig.html}</div>` : '';
+            const messageHtml = `<div class="message-container ai"><div class="avatar ai">AI</div><div class="chat-bubble"><p>${text.replace(/\n/g, '<br>')}</p>${uiHtml}</div></div>`;
+            chatWindow.insertAdjacentHTML('beforeend', messageHtml);
+            
+            if (uiConfig && typeof uiConfig.onRender === 'function') {
+                setTimeout(uiConfig.onRender, 50);
+            }
+
+            attachUIEventListeners();
+            scrollToBottom();
+        }
+        
+        function simulateAIResponse(callback, delay = 1500) {
+            showTypingIndicator();
+            setTimeout(() => {
+                hideTypingIndicator();
+                callback();
+            }, delay);
+        }
+
+        // --- ECharts Functions ---
+        function generateKlineData() {
+            let basePrice = 480;
+            let data = [];
+            let dates = [];
+            for (let i = 21; i >= 0; i--) {
+                let date = new Date(); date.setDate(date.getDate() - i - 1);
+                dates.push(date.toISOString().slice(5, 10)); // MM-DD
+                let open = basePrice;
+                let close = i <= 4 ? basePrice - (Math.random() * 10 + 5) : basePrice + (Math.random() > 0.5 ? 1 : -1) * (Math.random() * 10);
+                let high = Math.max(open, close) + Math.random() * 5;
+                let low = Math.min(open, close) - Math.random() * 5;
+                data.push([open.toFixed(2), close.toFixed(2), low.toFixed(2), high.toFixed(2)]);
+                basePrice = close;
+            }
+            data[data.length - 6] = [450, 445, 440, 455];
+            data[data.length - 1] = [405, 396, 395, 408];
+            return { dates, data };
+        }
+
+        function initKlineChart() {
+            const chartDom = document.getElementById('kline-chart');
+            if (!chartDom || chartDom.getAttribute('_echarts_instance_')) return;
+            let myChart = echarts.init(chartDom);
+            const { dates, data } = generateKlineData();
+            const option = {
+                tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+                grid: { left: '12%', right: '5%', bottom: '15%', top: '10%' },
+                xAxis: { type: 'category', data: dates, axisLine: { lineStyle: { color: '#888' } } },
+                yAxis: { scale: true, axisLabel: { formatter: '${value}' }, axisLine: { lineStyle: { color: '#888' } } },
+                dataZoom: [{ type: 'inside', start: 70, end: 100 }],
+                series: [{ name: 'NVDA', type: 'candlestick', data: data, itemStyle: { color: 'var(--success-color)', color0: 'var(--danger-color)', borderColor: 'var(--success-color)', borderColor0: 'var(--danger-color)' },
+                    markPoint: { data: [ { name: 'Start Drop', coord: [dates.length - 6, 450], value: '6/10: $450', itemStyle: {color: '#333'} }, { name: 'Current', coord: [dates.length - 1, 396], value: '6/15: $396', itemStyle: {color: 'var(--danger-color)'} } ] },
+                    markArea: { itemStyle: { color: 'rgba(255, 173, 177, 0.2)' }, data: [[{ name: '下跌区间', xAxis: dates[dates.length - 6] }, { xAxis: dates[dates.length - 1] }]] }
+                }]
+            };
+            myChart.setOption(option); chartInstances.push(myChart);
+        }
+
+        function initComparisonChart() {
+            const chartDom = document.getElementById('comparison-chart');
+            if (!chartDom || chartDom.getAttribute('_echarts_instance_')) return;
+            let myChart = echarts.init(chartDom);
+            const dates = Array.from({length: 22}, (_, i) => `5/${25+i}`);
+            let nvdaData = Array.from({length: 22}, (_, i) => 100 - i*0.5 + (i>16 ? -(i-16)*3 : Math.random()*2));
+            let nasdaqData = Array.from({length: 22}, (_, i) => 100 + i*0.2 + (Math.random()-0.5)*2);
+            const option = {
+                title: { text: 'NVDA vs 纳斯达克指数 (归一化)', left: 'center', textStyle: {fontSize: 14, color: '#666'} },
+                tooltip: { trigger: 'axis' }, legend: { data: ['NVDA', '纳斯达克'], bottom: 0 },
+                grid: { left: '10%', right: '10%', bottom: '15%', top: '20%', containLabel: true },
+                xAxis: { type: 'category', boundaryGap: false, data: dates },
+                yAxis: { type: 'value', axisLabel: { formatter: '{value}%' } },
+                series: [
+                    { name: 'NVDA', type: 'line', smooth: true, data: nvdaData, areaStyle: {opacity: 0.1}, lineStyle: {color: 'var(--danger-color)'}, itemStyle: {color: 'var(--danger-color)'} },
+                    { name: '纳斯达克', type: 'line', smooth: true, data: nasdaqData, lineStyle: {color: 'var(--info-color)'}, itemStyle: {color: 'var(--info-color)'} }
+                ]
+            };
+            myChart.setOption(option); chartInstances.push(myChart);
+        }
+
+        function initSentimentChart() {
+            const chartDom = document.getElementById('sentiment-chart');
+            if (!chartDom || chartDom.getAttribute('_echarts_instance_')) return;
+            let myChart = echarts.init(chartDom);
+            const option = {
+                title: { text: '社交媒体负面舆情热度', left: 'center', textStyle: {fontSize: 14, color: '#666'} },
+                tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+                grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+                xAxis: { type: 'category', data: ['4周前', '2周前', '上周', '今日'], axisTick: { alignWithLabel: true } },
+                yAxis: { type: 'value', show: false },
+                series: [{ name: '负面讨论量', type: 'bar', barWidth: '60%', label: { show: true, position: 'top' },
+                    data: [ { value: 65, itemStyle: { color: '#a5d6a7' } }, { value: 90, itemStyle: { color: '#ffcc80' } }, { value: 120, itemStyle: { color: '#ef9a9a' } }, { value: 360, itemStyle: { color: 'var(--danger-color)' }, label: { formatter: '{c} (200%↑)', color: 'var(--danger-color)', fontWeight: 'bold' } } ]
+                }]
+            };
+            myChart.setOption(option); chartInstances.push(myChart);
+        }
+
+        function initSupplyChainChart() {
+            const chartDom = document.getElementById('supply-chain-chart');
+            if (!chartDom || chartDom.getAttribute('_echarts_instance_')) return;
+            let myChart = echarts.init(chartDom);
+            const option = {
+                title: { text: '供应链关联影响', left: 'center', textStyle: {fontSize: 14, color: '#666'} },
+                tooltip: {},
+                series: [{
+                    type: 'graph', layout: 'force', force: { repulsion: 200, edgeLength: 120 }, roam: true,
+                    label: { show: true, position: 'bottom', color: '#333' },
+                    data: [ { name: 'NVDA', symbolSize: 60, itemStyle: { color: '#76b900' } }, { name: '微软', symbolSize: 40, itemStyle: { color: '#00a4ef' } }, { name: '谷歌', symbolSize: 40, itemStyle: { color: '#fbbc05' } }, { name: '台积电', symbolSize: 40, itemStyle: { color: '#3f51b5' } } ],
+                    links: [ { source: 'NVDA', target: '微软', value: '主要客户' }, { source: 'NVDA', target: '谷歌', value: '主要客户' }, { source: '台积电', target: 'NVDA', value: '核心代工' } ],
+                    lineStyle: { opacity: 0.9, width: 2, curveness: 0.1 }
+                }]
+            };
+            myChart.setOption(option); chartInstances.push(myChart);
+        }
+
+        // --- Scenario Functions ---
+        function showVolatilityWarning() {
+            const text = '您好！我是您的AI投资顾问。监测到您持有的 NVDA（英伟达）股票在过去 5 个交易日累计下跌 12%，今日早盘更是暴跌 8%，短期风险显著提升！';
+            const uiHtml = `<div id="kline-chart" class="chart-container"></div>
+                <div class="data-highlight-tags">
+                    <span class="data-tag">风险等级: 高</span>
+                    <span class="data-tag warning">波动率: 35%↑</span>
+                    <span class="data-tag sell">机构抛售: 70%</span>
+                </div>
+                <div id="comparison-chart" class="chart-container" style="margin-top:15px;"></div>`;
+            addAiMessage(text, { html: uiHtml, onRender: () => { initKlineChart(); initComparisonChart(); } });
+            currentScenario = 1;
+        }
+
+        function showReasonAnalysis() {
+            const text = `以下是导致股价波动的主要原因分析：
+                <ol style="padding-left: 20px; margin-bottom: 0;">
+                    <li><b>财报不及预期：</b>数据中心业务营收环比下降18%，低于市场预期。<br><span class="info-card-trigger" data-card="earnings">查看财报摘要</span></li>
+                    <li><b>行业竞争加剧：</b>AMD发布MI300X芯片，对标H100，引发市场担忧。<br><span class="info-card-trigger" data-card="amd_chip">了解AMD新品</span></li>
+                    <li><b>宏观政策影响：</b>美国计划加强AI芯片出口管制。<br><span class="info-card-trigger" data-card="policy_doc">查看政策文件</span></li>
+                </ol>`;
+            const uiHtml = `<div id="sentiment-chart" class="chart-container"></div>
+                <div class="tech-indicator-panel">
+                    <h4>技术指标分析</h4>
+                    <ul>
+                        <li>MACD出现死叉，RSI进入超卖区。</li>
+                        <li><span class="signal-highlight">近30日首次出现明确卖出信号。</span></li>
+                    </ul>
+                </div>`;
+            addAiMessage(text, { html: uiHtml, onRender: initSentimentChart });
+            currentScenario = 2;
+        }
+
+        function showTradingOptions() {
+            const text = `基于以上分析和您的风险偏好，为您提供以下交易方案：
+                <ul style="padding-left: 20px; margin-bottom: 0;">
+                    <li><b>保守型:</b> 立即减持 50% 仓位锁定利润，剩余仓位设置 8% 止损线。</li>
+                    <li><b>激进型:</b> 在 $380 支撑位附近补仓，但总仓位不超过组合的 20%。</li>
+                </ul>`;
+            const uiHtml = `<div class="action-buttons-container">
+                    <button class="action-button" data-action="reduce_50">▶ 减持 50%</button>
+                    <button class="action-button buy" data-action="buy_380">▶ 挂单 $380 买入</button>
+                    <button class="action-button stoploss" data-action="set_stoploss">▶ 设置 8% 止损</button>
+                    <button class="action-button more" data-action="more_strategies">? 更多策略</button>
+                </div>
+                <div class="simulator-calculator">
+                    <h4>减持模拟计算器</h4>
+                    <label for="reduce-slider">减持比例: <span id="reduce-percentage">0%</span></label>
+                    <input type="range" id="reduce-slider" min="0" max="100" value="0">
+                    <div class="result-display">
+                        减仓后持仓成本: <strong id="new-cost">$420.00</strong><br>
+                        组合风险敞口: <strong id="new-risk">25.0%</strong>
+                    </div>
+                </div>`;
+            addAiMessage(text, { html: uiHtml });
+            currentScenario = 3;
+        }
+
+        function handleEnhancedInteractions(userText) {
+             if (userText.includes('之前为何没预警')) {
+                simulateAIResponse(() => { addAiMessage('好的问题。我在6月5日股价首次跌破20日均线时，已向您发送过“关注短期回调风险”的提示。当时波动率仅为18%，未达到强预警阈值。今日波动率突破35%，因此触发了本次高风险强预警。'); });
+            } else if (userText.match(/卖掉|卖出|减持/)) {
+                 const percentage = userText.match(/\d+/)?.[0] || '部分';
+                simulateAIResponse(() => { addAiMessage(`好的，指令收到。正在为您执行卖出 ${percentage}% NVDA 股票的操作，交易提交后将向您确认。`); });
+            } else if (userText.includes('供应链')) {
+                simulateAIResponse(() => {
+                    const text = '这是NVDA与其供应链中关键企业的关联图。作为核心供应商，NVDA的剧烈波动会引起市场对下游客户（如云服务提供商）成本和稳定性的担忧，从而产生连锁反应。';
+                    const uiHtml = `<div id="supply-chain-chart" class="chart-container"></div>`;
+                    addAiMessage(text, { html: uiHtml, onRender: initSupplyChainChart });
+                });
+            } else {
+                simulateAIResponse(() => { addAiMessage('抱歉，我暂时无法理解这个指令。您可以尝试问我“之前为什么没预警”、“对供应链有什么影响”，或使用上方的操作按钮。'); });
+            }
+        }
+        
+        // --- Event Listener Attachment ---
+        function attachUIEventListeners() {
+            document.querySelectorAll('.info-card-trigger:not(.bound)').forEach(trigger => {
+                trigger.classList.add('bound');
+                trigger.onclick = (e) => {
+                    e.preventDefault(); const cardType = e.target.dataset.card; let cardContent = '';
+                    switch (cardType) {
+                        case 'earnings': cardContent = `<h4>Q2 财报摘要</h4><p>数据中心营收环比下降18%，低于市场增长10%的预期，引发投资者信心下滑。</p>`; break;
+                        case 'amd_chip': cardContent = `<h4>AMD MI300X 新品</h4><p>性能对标NVDA H100，定价更具竞争力，市场担忧英伟达在AI芯片市场的份额被挤压。</p>`; break;
+                        case 'policy_doc': cardContent = `<h4>AI芯片出口管制草案</h4><p>计划扩大对华AI芯片出口限制范围，若落地将限制英伟达海外市场拓展。</p>`; break;
+                    }
+                    const infoCard = document.createElement('div'); infoCard.className = 'info-card'; infoCard.innerHTML = cardContent;
+                    e.target.parentNode.insertBefore(infoCard, e.target.nextSibling); e.target.style.display = 'none'; scrollToBottom();
+                };
+            });
+
+            document.querySelectorAll('.action-button:not(.bound)').forEach(button => {
+                button.classList.add('bound');
+                button.onclick = (e) => {
+                    const action = e.target.dataset.action;
+                    if (action === 'more_strategies') { simulateAIResponse(() => addAiMessage('正在为您分析更多基于期权的对冲策略，例如使用买入看跌期权(Buy Put)来保护您的持仓。')); return; }
+                    showConfirmationModal(action);
+                };
+            });
+            
+            const reduceSlider = document.getElementById('reduce-slider');
+            if (reduceSlider && !reduceSlider.classList.contains('bound')) {
+                reduceSlider.classList.add('bound');
+                const reducePercentageSpan = document.getElementById('reduce-percentage');
+                const newCostStrong = document.getElementById('new-cost');
+                const newRiskStrong = document.getElementById('new-risk');
+                
+                reduceSlider.oninput = () => {
+                    const p = parseInt(reduceSlider.value);
+                    reducePercentageSpan.textContent = `${p}%`;
+                    reduceSlider.style.backgroundSize = `${p}% 100%`;
+                    const newCost = 420 - (p * 0.15); const newRisk = 25 - (p * 0.07);
+                    newCostStrong.textContent = `$${newCost.toFixed(2)}`; newRiskStrong.textContent = `${newRisk.toFixed(1)}%`;
+                };
+            }
+        }
+
+        // --- Modal Logic ---
+        function showConfirmationModal(action) {
+            let description = '', profit = 0, title = '风险确认';
+            switch (action) {
+                case 'reduce_50': title = '减持 50% 仓位'; description = '此操作将卖出您当前持有NVDA股票的50%，以锁定部分利润并降低风险敞口。'; profit = 5000; break;
+                case 'buy_380': title = '挂单买入'; description = '将在股价达到$380时自动买入预设数量的NVDA股票。请注意，这属于逆势操作，风险较高。'; profit = 0; break;
+                case 'set_stoploss': title = '设置 8% 止损'; description = '当股价从当前价格下跌8%时，系统将自动卖出剩余仓位以防止进一步亏损。'; profit = -3168; break;
+            }
+            modalTitle.textContent = title; modalActionDescription.textContent = description;
+            if (profit !== 0) {
+                 modalExpectedProfit.textContent = `预计锁定利润: ${profit > 0 ? '$' : '-$'}${Math.abs(profit)}`;
+                 modalExpectedProfit.style.color = profit > 0 ? 'var(--success-color)' : 'var(--danger-color)';
+                 modalExpectedProfit.style.display = 'block';
+            } else { modalExpectedProfit.style.display = 'none'; }
+            modalConfirmButton.dataset.action = action; understandRiskCheckbox.checked = false;
+            modalConfirmButton.disabled = true; modalOverlay.classList.add('active');
+        }
+        understandRiskCheckbox.onchange = () => { modalConfirmButton.disabled = !understandRiskCheckbox.checked; };
+        modalCancelButton.onclick = () => modalOverlay.classList.remove('active');
+        modalConfirmButton.onclick = () => {
+            if (!understandRiskCheckbox.checked) return;
+            modalOverlay.classList.remove('active');
+            simulateAIResponse(() => addAiMessage(`操作指令已提交：<b>${modalTitle.textContent}</b>。交易系统将在执行后通知您。`));
+        };
+        
+        // --- User Input Handling ---
+        function processUserInput() {
+            const userText = userInput.value.trim();
+            if (userText === '' || isAITyping) return;
+            addUserMessage(userText);
+            userInput.value = ''; userInput.style.height = 'auto';
+            
+            // State machine for conversation flow
+            if (currentScenario === 0) { simulateAIResponse(showVolatilityWarning); }
+            else if (currentScenario === 1) { simulateAIResponse(showReasonAnalysis); }
+            else if (currentScenario === 2) { simulateAIResponse(showTradingOptions); }
+            else { handleEnhancedInteractions(userText); }
+        }
+
+        sendButton.onclick = processUserInput;
+        userInput.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); processUserInput(); } };
+        userInput.oninput = () => { userInput.style.height = 'auto'; userInput.style.height = userInput.scrollHeight + 'px'; };
+
+        // --- Initial Load & Responsiveness ---
+        window.addEventListener('resize', () => chartInstances.forEach(chart => chart && chart.resize()));
+        simulateAIResponse(showVolatilityWarning, 1000);
+    });
+    </script>
+</body>
+</html>

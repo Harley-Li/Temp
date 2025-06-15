@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fidelity Workplace Pension Goal Planner</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <style>
+        :root {
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --bg-color: #f4f7fa;
+            --app-bg: #ffffff;
+            --chat-bg: #f9fafc;
+            --ai-bubble-bg: #ffffff;
+            --user-bubble-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --user-text-color: #ffffff;
+            --text-color-primary: #1a202c;
+            --text-color-secondary: #718096;
+            --border-color: #e2e8f0;
+            --accent-color: #667eea;
+            --danger-color: #e53e3e;
+            --warning-color: #dd6b20;
+            --success-color: #38a169;
+            --info-color: #3182ce;
+            --border-radius-m: 16px;
+            --border-radius-l: 20px;
+            --shadow-subtle: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+            --shadow-strong: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        /* --- General & Layout --- */
+        html { box-sizing: border-box; }
+        *, *:before, *:after { box-sizing: inherit; }
+        body {
+            font-family: var(--font-family); margin: 0; padding: 0;
+            background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; color: var(--text-color-primary);
+        }
+        #app-container {
+            width: 100%; max-width: 840px; height: 95vh; max-height: 900px;
+            background-color: var(--bg-color); box-shadow: var(--shadow-strong);
+            border-radius: var(--border-radius-l); display: flex; flex-direction: column;
+            overflow: hidden;
+        }
+        #chat-window {
+            flex-grow: 1; padding: 20px; overflow-y: auto;
+            display: flex; flex-direction: column; gap: 20px;
+            background-color: var(--chat-bg); scroll-behavior: smooth;
+        }
+        #chat-window::-webkit-scrollbar { width: 6px; }
+        #chat-window::-webkit-scrollbar-track { background: transparent; }
+        #chat-window::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+        /* --- Chat Bubbles & Messages --- */
+        .message-container { display: flex; align-items: flex-start; gap: 12px; max-width: 95%; animation: slideUpIn 0.5s ease-out; }
+        .message-container.user { align-self: flex-end; flex-direction: row-reverse; }
+        .message-container.ai { align-self: flex-start; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 500; font-size: 16px; color: #fff; flex-shrink: 0; background: var(--accent-color); box-shadow: var(--shadow-subtle); }
+        .avatar.user { background: var(--user-bubble-bg); }
+        .chat-bubble { padding: 16px 20px; border-radius: var(--border-radius-m); word-wrap: break-word; line-height: 1.6; }
+        .ai .chat-bubble { background-color: var(--ai-bubble-bg); border-bottom-left-radius: 6px; box-shadow: var(--shadow-subtle); }
+        .user .chat-bubble { background: var(--user-bubble-bg); color: var(--user-text-color); border-bottom-right-radius: 6px; }
+        .chat-bubble p:first-child { margin-top: 0; }
+        .chat-bubble p:last-child { margin-bottom: 0; }
+        .chat-bubble strong { color: var(--accent-color); font-weight: 600; }
+
+        /* --- Integrated UI Components --- */
+        .ui-component-wrapper { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border-color); }
+        .chart-container { width: 100%; height: 280px; border-radius: 12px; overflow: hidden; }
+        
+        .info-form-card { background: #fff; border-radius: var(--border-radius-m); padding: 20px; border: 1px solid var(--border-color); }
+        .info-form-card h4 { margin: 0 0 20px; text-align: center; font-size: 18px; color: var(--text-color-primary); }
+        .info-collection-form { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--text-color-secondary); margin-bottom: 8px; }
+        .form-group input { padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 16px; transition: border-color 0.2s, box-shadow 0.2s; }
+        .form-group input:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2); outline: none; }
+        
+        .lifestyle-goal-group { grid-column: 1 / -1; margin-top: 10px; }
+        .lifestyle-options { display: flex; justify-content: space-between; gap: 15px; }
+        .lifestyle-option { flex: 1; padding: 15px; border: 2px solid var(--border-color); border-radius: 10px; text-align: center; cursor: pointer; transition: all 0.2s ease; }
+        .lifestyle-option:hover { border-color: var(--accent-color); background: #f7faff; }
+        .lifestyle-option input { display: none; }
+        .lifestyle-option.selected { border-color: var(--accent-color); background-color: rgba(102, 126, 234, 0.1); box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2); }
+        .lifestyle-option .title { font-weight: 600; font-size: 16px; margin-bottom: 5px; }
+        .lifestyle-option .description { font-size: 13px; color: var(--text-color-secondary); }
+
+        .form-actions { grid-column: 1 / -1; margin-top: 10px; }
+        .action-button { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 14px; border: none; border-radius: 10px; font-size: 16px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; background: var(--accent-color); color: white; }
+        .action-button:hover { transform: translateY(-2px); box-shadow: var(--shadow-strong); }
+        
+        .plan-comparison-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 14px; }
+        .plan-comparison-table th, .plan-comparison-table td { padding: 12px 14px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        .plan-comparison-table th { background-color: #f8f9fa; font-weight: 600; }
+        .plan-comparison-table td:first-child { text-align: left; font-weight: 500; }
+        .plan-comparison-table tbody tr:hover { background-color: #f7faff; }
+        .risk-level { display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 12px; color: white; }
+        .risk-level.Low { background-color: var(--info-color); }
+        .risk-level.Medium { background-color: var(--success-color); }
+        .risk-level.High { background-color: var(--warning-color); }
+        .risk-level.Very-High { background-color: var(--danger-color); }
+        .gap-positive { color: var(--success-color); font-weight: 600; }
+        .gap-negative { color: var(--danger-color); font-weight: 600; }
+
+        .scenario-sandbox { background: linear-gradient(135deg, #f5f7fa 0%, #eef2f7 100%); padding: 20px; border-radius: var(--border-radius-l); margin-top: 10px; border: 1px solid var(--border-color); }
+        .sandbox-title { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 600; margin: 0 0 20px; }
+        .sandbox-controls { display: grid; grid-template-columns: 1fr; gap: 18px; }
+        .sandbox-control label { font-weight: 500; display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .sandbox-control .control-value { font-weight: 600; color: var(--accent-color); }
+        .sandbox-control input[type="range"] { width: 100%; -webkit-appearance: none; appearance: none; height: 8px; background: #ddd; outline: none; border-radius: 4px; background-image: linear-gradient(var(--accent-color), var(--accent-color)); background-size: 50% 100%; background-repeat: no-repeat; cursor: pointer; }
+        .sandbox-control input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--app-bg); cursor: pointer; border: 3px solid var(--accent-color); box-shadow: var(--shadow-subtle); margin-top: -6px; }
+        .sandbox-feedback { margin-top: 20px; padding: 15px; background-color: rgba(255, 255, 255, 0.7); border-radius: 10px; text-align: center; font-size: 16px; }
+
+        /* --- Modal & Animations --- */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; animation: fadeIn 0.3s ease; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background-color: var(--app-bg); padding: 30px; border-radius: var(--border-radius-l); width: 90%; max-width: 420px; box-shadow: var(--shadow-strong); text-align: center; }
+        .modal-content h3 { display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--text-color-primary); margin: 0 0 15px; font-size: 20px; }
+        .modal-content p { font-size: 16px; line-height: 1.6; margin: 0 0 20px; color: var(--text-color-secondary); }
+        .modal-content .disclaimer { display: flex; align-items: flex-start; text-align: left; margin-bottom: 25px; font-size: 14px; color: #777; }
+        .modal-content .disclaimer input[type="checkbox"] { margin-right: 10px; transform: scale(1.2); flex-shrink: 0; margin-top: 4px; }
+        .modal-buttons { display: flex; gap: 15px; justify-content: center; }
+        .modal-button { padding: 12px 24px; border: none; border-radius: 10px; cursor: pointer; font-size: 16px; font-weight: 500; transition: all 0.2s ease; }
+        .modal-button.confirm { background: var(--accent-color); color: white; }
+        .modal-button.cancel { background-color: #eee; color: var(--text-color-secondary); }
+        .modal-button:disabled { background-color: #ccc; cursor: not-allowed; }
+        
+        .typing-indicator { display: flex; align-items: center; gap: 4px; }
+        .typing-indicator span { width: 8px; height: 8px; border-radius: 50%; background-color: #b0b0b0; animation: bounce 1.2s infinite ease-in-out; }
+        .typing-indicator span:nth-of-type(2) { animation-delay: -1.0s; }
+        .typing-indicator span:nth-of-type(3) { animation-delay: -0.8s; }
+        @keyframes slideUpIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <div id="chat-window"></div>
+    </div>
+
+    <div id="risk-confirmation-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--warning-color);"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                Risk Warning
+            </h3>
+            <p>Increasing your allocation to stocks may increase potential returns, but it also means your portfolio will be exposed to higher market volatility and potential losses.</p>
+            <div class="disclaimer">
+                <input type="checkbox" id="understand-risk-checkbox">
+                <label for="understand-risk-checkbox">I understand and accept the associated risks and wish to proceed with the new plan.</label>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-button cancel" id="modal-cancel-button">Let me think</button>
+                <button class="modal-button confirm" id="modal-confirm-button" disabled>Confirm Update</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const chatWindow = document.getElementById('chat-window');
+        const modalOverlay = document.getElementById('risk-confirmation-modal');
+        const understandRiskCheckbox = document.getElementById('understand-risk-checkbox');
+        const modalConfirmButton = document.getElementById('modal-confirm-button');
+        const modalCancelButton = document.getElementById('modal-cancel-button');
+        
+        let chartInstances = {};
+        const state = {
+            isAITyping: false,
+            currentStep: 0,
+            plans: {},
+            userInput: {
+                currentPensionPot: 50000,
+                yourContribution: 200,
+                employerContribution: 100,
+                currentAge: 35,
+                retirementAge: 67,
+                lifestyleGoal: 'Moderate', // Minimum, Moderate, Comfortable
+                targetAmount: 622500, // Derived from lifestyleGoal
+            },
+            sandboxPlan: {}
+        };
+
+        const uiEngine = {
+            scrollToBottom: () => { chatWindow.scrollTop = chatWindow.scrollHeight; },
+            showTyping: () => {
+                if (state.isAITyping) return;
+                state.isAITyping = true;
+                const typingHtml = `<div class="message-container ai" id="typing-indicator"><div class="avatar ai">AI</div><div class="chat-bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div></div>`;
+                chatWindow.insertAdjacentHTML('beforeend', typingHtml);
+                uiEngine.scrollToBottom();
+            },
+            hideTyping: () => {
+                const indicator = document.getElementById('typing-indicator');
+                if (indicator) indicator.remove();
+                state.isAITyping = false;
+            },
+            addUserMessage: (text) => {
+                const messageHtml = `<div class="message-container user"><div class="avatar">You</div><div class="chat-bubble">${text}</div></div>`;
+                chatWindow.insertAdjacentHTML('beforeend', messageHtml);
+                uiEngine.scrollToBottom();
+            },
+            addAiMessage: (text, uiConfig = null) => {
+                const uiHtml = (uiConfig && uiConfig.html) ? `<div class="ui-component-wrapper">${uiConfig.html}</div>` : '';
+                const messageHtml = `<div class="message-container ai"><div class="avatar ai">AI</div><div class="chat-bubble"><p>${text.replace(/\n/g, '<br>')}</p>${uiHtml}</div></div>`;
+                chatWindow.insertAdjacentHTML('beforeend', messageHtml);
+                if (uiConfig && typeof uiConfig.onRender === 'function') { setTimeout(uiConfig.onRender, 50); }
+                eventEngine.attachUIEventListeners();
+                uiEngine.scrollToBottom();
+            },
+            simulateAIResponse: (callback, delay = 1200) => {
+                uiEngine.showTyping();
+                setTimeout(() => {
+                    uiEngine.hideTyping();
+                    callback();
+                }, delay);
+            }
+        };
+
+        const calcEngine = {
+            getLifestyleTarget(lifestyle) {
+                // Based on PLSA Retirement Living Standards 2023/24 for a single person outside London.
+                // Calculated as Annual Income / 4% withdrawal rate.
+                const targets = {
+                    'Minimum': 14400 / 0.04, // £360,000
+                    'Moderate': 24900 / 0.04, // £622,500
+                    'Comfortable': 43100 / 0.04  // £1,077,500
+                };
+                return targets[lifestyle] || targets['Moderate'];
+            },
+            calculateProjection(plan) {
+                let years = plan.retirementAge - plan.currentAge;
+                let totalMonthlyContribution = plan.yourContribution + plan.employerContribution;
+                if (years < 0) return { finalValue: plan.currentPensionPot, gap: plan.targetAmount - plan.currentPensionPot };
+                let finalValue = plan.currentPensionPot * Math.pow(1 + plan.annualReturn, years);
+                if (plan.annualReturn > 0) {
+                    finalValue += (totalMonthlyContribution * 12) * ((Math.pow(1 + plan.annualReturn, years) - 1) / plan.annualReturn);
+                } else {
+                    finalValue += (totalMonthlyContribution * 12) * years;
+                }
+                return { finalValue: Math.round(finalValue), gap: Math.round(plan.targetAmount - finalValue) };
+            },
+            generateProjectionData(plan, maxYears) {
+                let data = [];
+                for (let i = 0; i <= maxYears; i++) {
+                    let tempPlan = {...plan, retirementAge: plan.currentAge + i};
+                    data.push(this.calculateProjection(tempPlan).finalValue);
+                }
+                return data;
+            },
+            createPlans: () => {
+                const basePlan = { ...state.userInput };
+                state.plans = {
+                    current: { ...basePlan, name: 'Current Path', risk: 'Medium', stockAllocation: 0.50, annualReturn: 0.05, color: 'var(--success-color)' },
+                    conservative: { ...basePlan, name: 'Cautious', risk: 'Low', stockAllocation: 0.30, annualReturn: 0.035, color: 'var(--info-color)' },
+                    balanced: { ...basePlan, name: 'Balanced', risk: 'High', stockAllocation: 0.65, annualReturn: 0.06, color: 'var(--warning-color)' },
+                    aggressive: { ...basePlan, name: 'Adventurous', risk: 'Very-High', stockAllocation: 0.85, annualReturn: 0.075, color: 'var(--danger-color)' },
+                    sandbox: { ...basePlan, name: 'Sandbox', annualReturn: 0.06, color: 'var(--accent-color)' }
+                };
+            }
+        };
+        
+        const chartEngine = {
+            initProjectionChart(containerId) {
+                const chartDom = document.getElementById(containerId);
+                if (!chartDom || chartDom.getAttribute('_echarts_instance_')) return;
+                let myChart = echarts.init(chartDom, null, { renderer: 'svg' }); // Use SVG for cleaner rendering
+                const maxAge = 70;
+                const maxYears = maxAge - state.userInput.currentAge;
+                const xAxisData = Array.from({length: maxYears + 1}, (_, i) => `Age ${state.userInput.currentAge + i}`);
+                
+                const series = Object.values(state.plans).map(plan => ({
+                    name: plan.name, type: 'line', smooth: 0.6,
+                    symbol: 'none',
+                    data: calcEngine.generateProjectionData(plan, maxYears),
+                    lineStyle: { color: plan.color, width: plan.name === 'Sandbox' ? 3 : 2, type: plan.name === 'Sandbox' ? 'dashed' : 'solid' },
+                }));
+
+                myChart.setOption({
+                    title: { text: 'Retirement Savings Projection', left: 'center', textStyle: {fontSize: 16, color: '#333', fontWeight: 500} },
+                    tooltip: { trigger: 'axis', valueFormatter: (value) => `£${(value/1000).toFixed(1)}k` },
+                    legend: { data: Object.values(state.plans).map(p => p.name), bottom: 0, icon: 'circle', itemGap: 15 },
+                    grid: { left: '12%', right: '8%', bottom: '15%', top: '20%' },
+                    xAxis: { type: 'category', boundaryGap: false, data: xAxisData, axisLine: { lineStyle: { color: '#ccc' } }, axisTick: { show: false } },
+                    yAxis: { type: 'value', axisLabel: { formatter: (v) => `£${v/1000}k` }, splitLine: { lineStyle: { type: 'dashed', color: '#eee' } } },
+                    series: series
+                });
+                chartInstances[containerId] = myChart;
+            },
+            updateSandboxSeries() {
+                if (!chartInstances['projection-chart']) return;
+                const maxYears = 70 - state.userInput.currentAge;
+                const sandboxData = calcEngine.generateProjectionData(state.sandboxPlan, maxYears);
+                chartInstances['projection-chart'].setOption({
+                    series: [{ name: 'Sandbox', data: sandboxData }]
+                });
+            }
+        };
+
+        const flowEngine = {
+            start: () => {
+                uiEngine.simulateAIResponse(() => {
+                    const text = "Hello! As a Fidelity Workplace Pension member, it's a great idea to check if you're on track for the retirement you want.\nLet's start by reviewing your current plan and goals.";
+                    const uiHtml = `<div class="info-form-card">
+                            <h4>Review Your Retirement Plan</h4>
+                            <form id="info-form" class="info-collection-form">
+                                <div class="form-group"><label for="current-pot">Current Pension Pot (£)</label><input type="number" id="current-pot" value="50000" required></div>
+                                <div class="form-group"><label for="current-age">Current Age</label><input type="number" id="current-age" value="35" required></div>
+                                <div class="form-group"><label for="your-contrib">Your Monthly Contribution (£)</label><input type="number" id="your-contrib" value="200" required></div>
+                                <div class="form-group"><label for="employer-contrib">Employer Monthly Contribution (£)</label><input type="number" id="employer-contrib" value="100" required></div>
+                                
+                                <div class="lifestyle-goal-group">
+                                   <label>What's your desired retirement lifestyle?</label>
+                                   <div class="lifestyle-options" id="lifestyle-selector">
+                                        <label class="lifestyle-option">
+                                            <input type="radio" name="lifestyle" value="Minimum" />
+                                            <div class="title">Minimum</div>
+                                            <div class="description">Covers all your basic needs with a little left over. (~£14.4k/yr)</div>
+                                        </label>
+                                        <label class="lifestyle-option selected">
+                                            <input type="radio" name="lifestyle" value="Moderate" checked />
+                                            <div class="title">Moderate</div>
+                                            <div class="description">More financial security and flexibility. (~£24.9k/yr)</div>
+                                        </label>
+                                        <label class="lifestyle-option">
+                                            <input type="radio" name="lifestyle" value="Comfortable" />
+                                            <div class="title">Comfortable</div>
+                                            <div class="description">More financial freedom and some luxuries. (~£43.1k/yr)</div>
+                                        </label>
+                                   </div>
+                                </div>
+                                <div class="form-group" style="grid-column: 1 / -1;"><label for="retirement-age">Target Retirement Age</label><input type="number" id="retirement-age" value="67" required></div>
+                                <div class="form-actions"><button type="submit" class="action-button">Check My Projection</button></div>
+                            </form>
+                        </div>`;
+                    uiEngine.addAiMessage(text, { html: uiHtml });
+                });
+            },
+            generateAndShowPlans: () => {
+                uiEngine.simulateAIResponse(() => {
+                    calcEngine.createPlans();
+                    const tableRows = Object.values(state.plans).filter(p => p.name !== 'Sandbox').map(plan => {
+                        const result = calcEngine.calculateProjection(plan);
+                        const gapText = result.gap > 0 ? `<span class="gap-negative">-£${(result.gap/1000).toFixed(1)}k</span>` : `<span class="gap-positive">+£${(Math.abs(result.gap)/1000).toFixed(1)}k</span>`;
+                        return `<tr><td>${plan.name}</td><td>${plan.stockAllocation*100}%</td><td>${(plan.annualReturn*100).toFixed(1)}%</td><td><span class="risk-level ${plan.risk.replace(' ','-')}">${plan.risk}</span></td><td>${gapText}</td></tr>`;
+                    }).join('');
+
+                    const text = "Analysis complete! Based on your data, I've created three alternative investment paths with different risk levels and compared them with your current trajectory.";
+                    const uiHtml = `<div id="projection-chart" class="chart-container"></div>
+                        <table class="plan-comparison-table">
+                            <thead><tr><th>Plan</th><th>Equity Allocation</th><th>Est. Annual Return</th><th>Risk Level</th><th>Surplus / Shortfall</th></tr></thead>
+                            <tbody>${tableRows}</tbody>
+                        </table>
+                        <div class="form-actions" style="margin-top:20px;">
+                            <button id="goto-sandbox-btn" class="action-button">Explore in Retirement Sandbox</button>
+                        </div>`;
+                    uiEngine.addAiMessage(text, { html: uiHtml, onRender: () => chartEngine.initProjectionChart('projection-chart') });
+                });
+            },
+            showSandbox: () => {
+                 uiEngine.simulateAIResponse(() => {
+                    state.sandboxPlan = { ...state.plans.balanced };
+                    const text = "Welcome to the Retirement Sandbox! Here, you can experiment by adjusting different variables to see their real-time impact on your retirement future.";
+                    const uiHtml = `<div class="scenario-sandbox">
+                            <h4 class="sandbox-title">Retirement Sandbox Simulator</h4>
+                            <div class="sandbox-controls">
+                                <div class="sandbox-control">
+                                    <label><span>Retirement Age</span><span id="age-value" class="control-value">${state.sandboxPlan.retirementAge}</span></label>
+                                    <input type="range" id="age-slider" min="60" max="70" value="${state.sandboxPlan.retirementAge}">
+                                </div>
+                                <div class="sandbox-control">
+                                    <label><span>Total Monthly Contribution</span><span id="contrib-value" class="control-value">£${state.sandboxPlan.yourContribution + state.sandboxPlan.employerContribution}</span></label>
+                                    <input type="range" id="contrib-slider" min="100" max="2000" step="50" value="${state.sandboxPlan.yourContribution + state.sandboxPlan.employerContribution}">
+                                </div>
+                                <div class="sandbox-control">
+                                    <label><span>One-time Investment Boost</span><span id="boost-value" class="control-value">£0</span></label>
+                                    <input type="range" id="boost-slider" min="0" max="100000" step="1000" value="0">
+                                </div>
+                            </div>
+                            <div class="sandbox-feedback" id="sandbox-feedback-text"></div>
+                            <div class="form-actions" style="margin-top: 20px;">
+                                <button id="finalize-sandbox-btn" class="action-button">Review this Simulation</button>
+                            </div>
+                        </div>`;
+                     uiEngine.addAiMessage(text, { html: uiHtml });
+                 });
+            },
+            showFinalPlan: () => {
+                uiEngine.addUserMessage("Okay, I've adjusted the sliders. How does this look for my goal?");
+                uiEngine.simulateAIResponse(() => {
+                    const result = calcEngine.calculateProjection(state.sandboxPlan);
+                    const userLifestyleGoal = state.userInput.lifestyleGoal;
+                    const boostValue = parseInt(document.getElementById('boost-slider')?.value || '0');
+
+                    let summaryText = `Here's the summary of your simulated plan to reach your <strong>'${userLifestyleGoal}'</strong> lifestyle goal:\n\n` +
+                                      `<ul>` +
+                                      `<li><strong>Retirement Age:</strong> ${state.sandboxPlan.retirementAge}</li>` +
+                                      `<li><strong>Your Monthly Contribution:</strong> £${state.sandboxPlan.yourContribution}</li>` +
+                                      `<li><strong>Employer Monthly Contribution:</strong> £${state.sandboxPlan.employerContribution}</li>` +
+                                      (boostValue > 0 ? `<li><strong>One-time Boost:</strong> £${boostValue}</li>` : '') +
+                                      `</ul>\n` +
+                                      `This projects a final pot of <strong>£${(result.finalValue/1000).toFixed(1)}k</strong>. `;
+
+                    if (result.gap > 0) {
+                        summaryText += `This is still <span class="gap-negative">£${(result.gap/1000).toFixed(1)}k</span> short of your goal. You might need to consider increasing contributions further, delaying retirement, or perhaps exploring a plan with a higher growth potential (and higher risk).`;
+                    } else {
+                        summaryText += `This comfortably meets your goal with a surplus of <span class="gap-positive">+£${(Math.abs(result.gap)/1000).toFixed(1)}k</span>. This looks like a solid strategy!`;
+                    }
+
+                    const actionText = `\n\n<strong>Next Steps:</strong>\n` +
+                                     `To make this plan a reality, the next step would be to log into your Fidelity account and adjust your contribution rate.\n\n` +
+                                     `What would you like to do now?`;
+
+                    const uiHtml = `<div class="form-actions" style="display: flex; flex-direction: column; gap: 15px; margin-top: 20px;">
+                                        <button id="end-conversation-btn" class="action-button">I'm happy with this plan</button>
+                                        <button id="restart-sandbox-btn" class="action-button" style="background-color: var(--text-color-secondary);">Go back to Sandbox</button>
+                                    </div>`;
+
+                    uiEngine.addAiMessage(summaryText + actionText, {html: uiHtml});
+                });
+            },
+            endConversation: () => {
+                uiEngine.addUserMessage("I'm happy with this plan, thank you.");
+                uiEngine.simulateAIResponse(() => {
+                    const finalText = "That's great to hear! I'm glad we could find a path that works for you. Remember that regular reviews are important to stay on track. Don't hesitate to come back if your circumstances change. Have a great day!";
+                    uiEngine.addAiMessage(finalText);
+                }, 800);
+            }
+        };
+
+        const eventEngine = {
+            attachUIEventListeners() {
+                const infoForm = document.getElementById('info-form');
+                if (infoForm && !infoForm.classList.contains('bound')) {
+                    infoForm.classList.add('bound');
+                    infoForm.onsubmit = (e) => {
+                        e.preventDefault();
+                        state.userInput.currentPensionPot = parseFloat(document.getElementById('current-pot').value);
+                        state.userInput.yourContribution = parseFloat(document.getElementById('your-contrib').value);
+                        state.userInput.employerContribution = parseFloat(document.getElementById('employer-contrib').value);
+                        state.userInput.currentAge = parseInt(document.getElementById('current-age').value);
+                        state.userInput.retirementAge = parseInt(document.getElementById('retirement-age').value);
+                        state.userInput.lifestyleGoal = document.querySelector('input[name="lifestyle"]:checked').value;
+                        state.userInput.targetAmount = calcEngine.getLifestyleTarget(state.userInput.lifestyleGoal);
+
+                        uiEngine.addUserMessage(`Okay, I've updated my details.`);
+                        flowEngine.generateAndShowPlans();
+                    };
+                }
+
+                const lifestyleSelector = document.getElementById('lifestyle-selector');
+                if (lifestyleSelector && !lifestyleSelector.classList.contains('bound')) {
+                    lifestyleSelector.classList.add('bound');
+                    lifestyleSelector.addEventListener('click', (e) => {
+                        const targetLabel = e.target.closest('.lifestyle-option');
+                        if (!targetLabel) return;
+
+                        lifestyleSelector.querySelectorAll('.lifestyle-option').forEach(opt => opt.classList.remove('selected'));
+                        targetLabel.classList.add('selected');
+                        const radio = targetLabel.querySelector('input[type="radio"]');
+                        if(radio) radio.checked = true;
+                    });
+                }
+
+                const sandboxBtn = document.getElementById('goto-sandbox-btn');
+                if(sandboxBtn && !sandboxBtn.classList.contains('bound')) {
+                    sandboxBtn.classList.add('bound');
+                    sandboxBtn.onclick = () => {
+                        uiEngine.addUserMessage("Take me to the Retirement Sandbox.");
+                        flowEngine.showSandbox();
+                    }
+                }
+                this.attachSandboxListeners();
+
+                const restartBtn = document.getElementById('restart-sandbox-btn');
+                if(restartBtn && !restartBtn.classList.contains('bound')) {
+                    restartBtn.classList.add('bound');
+                    restartBtn.onclick = () => {
+                        uiEngine.addUserMessage("Let me go back to the sandbox.");
+                        flowEngine.showSandbox();
+                    }
+                }
+                
+                const endBtn = document.getElementById('end-conversation-btn');
+                if(endBtn && !endBtn.classList.contains('bound')) {
+                    endBtn.classList.add('bound');
+                    endBtn.onclick = () => {
+                        flowEngine.endConversation();
+                    }
+                }
+            },
+            attachSandboxListeners() {
+                const ageSlider = document.getElementById('age-slider');
+                const contribSlider = document.getElementById('contrib-slider');
+                const boostSlider = document.getElementById('boost-slider');
+                const finalizeBtn = document.getElementById('finalize-sandbox-btn');
+
+                if (!ageSlider || ageSlider.classList.contains('bound')) return;
+
+                const sliders = [ageSlider, contribSlider, boostSlider];
+                sliders.forEach(s => s.classList.add('bound'));
+                
+                if(finalizeBtn) {
+                    finalizeBtn.classList.add('bound');
+                    finalizeBtn.onclick = () => {
+                        flowEngine.showFinalPlan();
+                    };
+                }
+
+                const updateSandbox = () => {
+                    const originalTotalContribution = state.userInput.yourContribution + state.userInput.employerContribution;
+                    const yourShare = originalTotalContribution > 0 ? state.userInput.yourContribution / originalTotalContribution : 0.5;
+                    
+                    state.sandboxPlan.retirementAge = parseInt(ageSlider.value);
+                    const totalContrib = parseInt(contribSlider.value);
+                    state.sandboxPlan.yourContribution = Math.round(totalContrib * yourShare);
+                    state.sandboxPlan.employerContribution = totalContrib - state.sandboxPlan.yourContribution;
+
+                    state.sandboxPlan.currentPensionPot = state.userInput.currentPensionPot + parseInt(boostSlider.value);
+                    
+                    document.getElementById('age-value').textContent = `${ageSlider.value}`;
+                    document.getElementById('contrib-value').textContent = `£${totalContrib}`;
+                    document.getElementById('boost-value').textContent = `£${boostSlider.value}`;
+                    
+                    const updateSliderBg = (s) => { s.style.backgroundSize = `${(s.value - s.min) / (s.max - s.min) * 100}% 100%`; };
+                    sliders.forEach(updateSliderBg);
+
+                    const result = calcEngine.calculateProjection(state.sandboxPlan);
+                    const feedbackText = document.getElementById('sandbox-feedback-text');
+                    const gapText = result.gap > 0 
+                        ? `there's a projected shortfall of <span class="gap-negative">£${(result.gap / 1000).toFixed(1)}k</span> for your '${state.userInput.lifestyleGoal}' goal.`
+                        : `you're projected to exceed your '${state.userInput.lifestyleGoal}' goal with a surplus of <span class="gap-positive">+£${(Math.abs(result.gap) / 1000).toFixed(1)}k</span>!`;
+                    feedbackText.innerHTML = `With these settings, you're projected to accumulate <strong>£${(result.finalValue/1000).toFixed(1)}k</strong> by age ${state.sandboxPlan.retirementAge}. Currently, ${gapText}`;
+
+                    chartEngine.updateSandboxSeries();
+                };
+                
+                sliders.forEach(s => s.oninput = updateSandbox);
+                updateSandbox();
+            },
+            attachModalListeners() {
+                modalCancelButton.onclick = () => { modalOverlay.classList.remove('active'); };
+                understandRiskCheckbox.onchange = () => { modalConfirmButton.disabled = !understandRiskCheckbox.checked; };
+            }
+        };
+        
+        eventEngine.attachModalListeners();
+        flowEngine.start();
+    });
+    </script>
+</body>
+</html>
