@@ -1,0 +1,74 @@
+.chartContainer {
+    width: 100%;
+    height: 280px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.planComparisonTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+    margin-top: 20px;
+
+    th, td {
+        padding: 12px 14px;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+
+    td:first-child {
+        text-align: left;
+        font-weight: 500;
+    }
+
+    tbody tr:hover {
+        background-color: #f7faff;
+    }
+}
+
+.riskLevel {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    color: white;
+
+    &.riskLevelLow { background-color: var(--info-color); }
+    &.riskLevelMedium { background-color: var(--success-color); }
+    &.riskLevelHigh { background-color: var(--warning-color); }
+    &.riskLevelVery-High { background-color: var(--danger-color); }
+}
+
+.formActions {
+    grid-column: 1 / -1;
+    margin-top: 20px;
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--accent-color);
+    color: white;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-strong);
+    }
+} 

@@ -1,0 +1,99 @@
+.scenarioSandbox {
+    background: linear-gradient(135deg, #f5f7fa 0%, #eef2f7 100%);
+    padding: 20px;
+    border-radius: var(--border-radius-l);
+    margin-top: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.sandboxTitle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 20px;
+}
+
+.sandboxControls {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+}
+
+.sandboxControl {
+    label {
+        font-weight: 500;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: var(--text-color-secondary);
+    }
+    .controlValue {
+        font-weight: 600;
+        color: var(--accent-color);
+    }
+    input[type="range"] {
+        width: 100%;
+        -webkit-appearance: none;
+        appearance: none;
+        height: 8px;
+        background: #ddd;
+        outline: none;
+        border-radius: 4px;
+        background-image: linear-gradient(var(--accent-color), var(--accent-color));
+        background-size: 50% 100%;
+        background-repeat: no-repeat;
+        cursor: pointer;
+        
+        &::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--app-bg);
+            cursor: pointer;
+            border: 3px solid var(--accent-color);
+            box-shadow: var(--shadow-subtle);
+            margin-top: -6px;
+        }
+    }
+}
+
+.sandboxFeedback {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+.formActions {
+    margin-top: 20px;
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--accent-color);
+    color: white;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-strong);
+    }
+} 

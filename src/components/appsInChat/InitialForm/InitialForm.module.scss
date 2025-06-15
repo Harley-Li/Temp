@@ -1,0 +1,133 @@
+.infoFormCard {
+    background: #fff;
+    border-radius: var(--border-radius-m);
+    padding: 20px;
+    border: 1px solid var(--border-color);
+
+    h4 {
+        margin: 0 0 20px;
+        text-align: center;
+        font-size: 18px;
+        color: var(--text-color-primary);
+    }
+}
+
+.infoCollectionForm {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+
+    label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        color: var(--text-color-secondary);
+        margin-bottom: 8px;
+    }
+
+    input {
+        padding: 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+
+        &:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            outline: none;
+        }
+    }
+    &.fullWidth {
+        grid-column: 1 / -1;
+    }
+}
+
+.lifestyleGoalGroup {
+    grid-column: 1 / -1;
+    margin-top: 10px;
+
+    > label { // Direct child label
+        display: block;
+        font-size: 14px;
+        color: var(--text-color-secondary);
+        margin-bottom: 12px;
+        font-weight: 500;
+    }
+}
+
+.lifestyleOptions {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.lifestyleOption {
+    flex: 1;
+    padding: 15px;
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+        border-color: var(--accent-color);
+        background: #f7faff;
+    }
+
+    input {
+        display: none;
+    }
+
+    &.selected {
+        border-color: var(--accent-color);
+        background-color: rgba(102, 126, 234, 0.1);
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+    }
+
+    .title {
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+    .description {
+        font-size: 13px;
+        color: var(--text-color-secondary);
+        line-height: 1.4;
+    }
+}
+
+.formActions {
+    grid-column: 1 / -1;
+    margin-top: 10px;
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--accent-color);
+    color: white;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-strong);
+    }
+} 

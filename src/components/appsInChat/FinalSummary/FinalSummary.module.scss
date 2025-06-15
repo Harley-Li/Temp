@@ -1,0 +1,32 @@
+.formActions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--accent-color);
+    color: white;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-strong);
+    }
+
+    &.secondary {
+        background-color: var(--text-color-secondary);
+    }
+} 

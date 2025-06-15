@@ -1,50 +1,84 @@
-# React + TypeScript + Vite
+# React Retirement Planner
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a React-based application that helps users plan for their retirement. It's a conversion of a single-page HTML application into a modern, component-based React application using TypeScript and SCSS modules.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Interactive chat interface for guiding the user.
+- User input form for financial details and retirement goals.
+- Dynamic projection chart powered by ECharts.
+- Comparison table for different investment strategies.
+- Interactive sandbox for simulating different retirement scenarios.
+- Goal-oriented planning based on PLSA retirement lifestyle standards.
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### Prerequisites
 
-- Configure the top-level `parserOptions` property like this:
+- Node.js (v18 or later)
+- npm or yarn
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd react-retirement-planner
+   ```
+3. Install the dependencies:
+   ```bash
+   npm install
+   ```
+
+### Running the Application
+
+To start the development server, run:
+
+```bash
+npm run dev
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+This will open the application in your default browser at `http://localhost:5173`.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+### Building for Production
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+To create a production-ready build, run:
+
+```bash
+npm run build
+```
+
+The optimized and minified files will be placed in the `dist` directory. You can preview the production build locally with `npm run preview`.
+
+## Project Structure
+
+```
+/
+|-- public/
+|   |-- favicon.ico
+|-- src/
+|   |-- assets/
+|   |-- components/
+|   |   |-- common/
+|   |   |-- ChatMessage/
+|   |   |-- ChatWindow/
+|   |   |-- InitialForm/
+|   |   |-- ... (other components)
+|   |-- hooks/
+|   |-- services/
+|   |-- styles/
+|   |   |-- globals.scss
+|   |-- types/
+|   |-- App.tsx
+|   |-- main.tsx
+|-- .gitignore
+|-- index.html
+|-- package.json
+|-- tsconfig.json
+|-- tsconfig.node.json
+|-- vite.config.ts
+|-- README.md
 ```
