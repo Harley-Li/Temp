@@ -1,5 +1,8 @@
 .app-container {
-    background-color: #8e98b0;
+    background-image: url('/chatbot/icons/bg.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    backdrop-filter: blur(10px);
     header {
         min-height: 2.25rem;
         margin-bottom: 2rem;
@@ -25,7 +28,7 @@
         }
 
         span {
-            color: #141414;
+            color: #f1f1f1;
             font-size: 1rem;
             font-weight: 400;
             margin-left: 0.75rem;
@@ -211,10 +214,13 @@
             display: flex;
 
             main {
-                background-color: #e8eaec;
+                background-color: rgba(16, 18, 19, 0.5);
+                backdrop-filter: blur(8px);
+                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+                border: 1px solid rgba(255, 255, 255, 0.18);
                 flex-grow: 1;
                 min-width: 100%;
-                padding: 1.5rem 1rem 1.5rem 1.5rem;
+                padding: 1.5rem .125rem 1.5rem 1.5rem;
                 border-radius: 1rem;
 
                 .content-area {
@@ -224,6 +230,7 @@
                     max-height: calc(100% - 68px);
                     overflow: auto;
                     container-type: inline-size;
+                    padding-right: .875rem;
 
                     @container (max-width: 1300px) {
                         & > * {
@@ -246,7 +253,7 @@
                     }
 
                     &::-webkit-scrollbar-thumb {
-                        background: linear-gradient(45deg, #e8eaec, #1b3b5c, #e8eaec);
+                        background: linear-gradient(45deg, rgba(232, 234, 236, 0.5), #1b3b5c, rgba(232, 234, 236, 0.5));
                         border-radius: 10px;
                     }
 
@@ -278,7 +285,9 @@
                 min-width: 0;
                 overflow: hidden;
                 border-radius: 1rem;
-                background-color: #fff;
+                background-color: rgba(16, 18, 19, 0.5);
+                backdrop-filter: blur(8px);
+                box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
                 position: relative;
             }
 
@@ -287,7 +296,7 @@
                     min-width: calc(100% - 1.5rem - 25rem);
                     width: calc(100% - 1.5rem - 25rem);
                     max-width: calc(100% - 1.5rem - 25rem);
-                    padding: 1.5rem;
+                    padding: 1.5rem .125rem 1.5rem 1.5rem;
                 }
 
                 aside {

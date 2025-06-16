@@ -91,12 +91,10 @@ const Admin: React.FC = () => {
                     <div className={`history-container ${showModal && 'expand'}`}>
                         <main ref={mainPanel}>
                             <header>
-                                <a href="https://github.com/Harley-Li/Me" className="site-logo"></a> <span>FIDELITY</span>
-                                <div className="tab-list">
+                                <a href="https://github.com/Harley-Li/Me" className="site-logo"></a> <span>Fidelity UK</span>
+                                {/* <div className="tab-list">
                                     <input type="radio" name="top-tabs" id="" aria-label="Home" defaultChecked={true} />
-                                    <input type="radio" name="top-tabs" id="" aria-label="Market" />
-                                    <input type="radio" name="top-tabs" id="" aria-label="AI-Board" />
-                                </div>
+                                </div> */}
                                 <div className="search-box">
                                     <input type="search" name="" id="" placeholder="Enter your search request..." />
                                 </div>
