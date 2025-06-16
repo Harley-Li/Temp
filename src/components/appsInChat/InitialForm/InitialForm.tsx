@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UserInput } from '../../../types';
+import { UserInput } from '../../../types/index';
 import styles from './InitialForm.module.scss';
 
 type Lifestyle = 'Minimum' | 'Moderate' | 'Comfortable';
@@ -51,21 +51,26 @@ const InitialForm: React.FC<InitialFormProps> = ({ onSubmit, initialData }) => {
     <div className={styles.infoFormCard}>
         <h4>Review Your Retirement Plan</h4>
         <form onSubmit={handleSubmit} className={styles.infoCollectionForm}>
-            <div className={styles.formGroup}>
-                <label htmlFor="currentPensionPot">Current Pension Pot (£)</label>
-                <input type="number" id="currentPensionPot" value={formData.currentPensionPot} onChange={handleChange} required />
+            <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                    <label htmlFor="currentPensionPot">Current Pension Pot (£)</label>
+                    <input type="number" id="currentPensionPot" value={formData.currentPensionPot} onChange={handleChange} required />
+                </div>
+                <div className={styles.formGroup}>
+                    <label htmlFor="currentAge">Current Age</label>
+                    <input type="number" id="currentAge" value={formData.currentAge} onChange={handleChange} required />
+                </div>
             </div>
-            <div className={styles.formGroup}>
-                <label htmlFor="currentAge">Current Age</label>
-                <input type="number" id="currentAge" value={formData.currentAge} onChange={handleChange} required />
-            </div>
-            <div className={styles.formGroup}>
-                <label htmlFor="yourContribution">Your Monthly Contribution (£)</label>
-                <input type="number" id="yourContribution" value={formData.yourContribution} onChange={handleChange} required />
-            </div>
-            <div className={styles.formGroup}>
-                <label htmlFor="employerContribution">Employer Monthly Contribution (£)</label>
-                <input type="number" id="employerContribution" value={formData.employerContribution} onChange={handleChange} required />
+            
+            <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                    <label htmlFor="yourContribution">Your Monthly Contribution (£)</label>
+                    <input type="number" id="yourContribution" value={formData.yourContribution} onChange={handleChange} required />
+                </div>
+                <div className={styles.formGroup}>
+                    <label htmlFor="employerContribution">Employer Monthly Contribution (£)</label>
+                    <input type="number" id="employerContribution" value={formData.employerContribution} onChange={handleChange} required />
+                </div>
             </div>
             
             <div className={styles.lifestyleGoalGroup}>
@@ -76,10 +81,17 @@ const InitialForm: React.FC<InitialFormProps> = ({ onSubmit, initialData }) => {
                     <LifestyleOption value="Comfortable" title="Comfortable" description="More financial freedom and some luxuries. (~£43.1k/yr)" selectedValue={formData.lifestyleGoal} onChange={handleLifestyleChange} />
                </div>
             </div>
-            <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                <label htmlFor="retirementAge">Target Retirement Age</label>
-                <input type="number" id="retirementAge" value={formData.retirementAge} onChange={handleChange} required />
+            
+            <div className={styles.formRow}>
+                <div className={styles.formGroup}>
+                    <label htmlFor="retirementAge">Target Retirement Age</label>
+                    <input type="number" id="retirementAge" value={formData.retirementAge} onChange={handleChange} required />
+                </div>
+                <div className={styles.formGroup}>
+                    {/* Empty div to maintain layout */}
+                </div>
             </div>
+            
             <div className={styles.formActions}>
                 <button type="submit" className={styles.actionButton}>Check My Projection</button>
             </div>

@@ -1,32 +1,130 @@
+.summaryContainer {
+    background: rgba(16, 18, 19, 0.5);
+    backdrop-filter: blur(8px);
+    border-radius: 0.75rem;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    h4 {
+        margin: 0 0 15px;
+        text-align: center;
+        font-size: 16px;
+        color: #f1f1f1;
+    }
+}
+
+.summaryContent {
+    font-size: 14px;
+    line-height: 1.5;
+    color: #f1f1f1;
+
+    ul {
+        padding-left: 1.5rem;
+        margin: 0.75rem 0;
+        list-style-type: none;
+    }
+
+    li {
+        margin-bottom: 0.5rem;
+        position: relative;
+        padding-left: 0.5rem;
+
+        &::before {
+            content: "•";
+            color: #667eea;
+            font-size: 18px;
+            position: absolute;
+            left: -1rem;
+            top: -2px;
+        }
+    }
+
+    strong {
+        color: #f1f1f1;
+        font-weight: 600;
+    }
+}
+
+.valueHighlight {
+    display: inline-block;
+    color: #ffffff;
+    font-weight: 600;
+    background-color: rgba(102, 126, 234, 0.15);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 4px;
+}
+
+.finalValue {
+    display: inline-block;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 16px;
+    background-color: rgba(102, 126, 234, 0.25);
+    padding: 3px 10px;
+    border-radius: 4px;
+}
+
+.gapPositive {
+    display: inline-block;
+    color: #4ade80;
+    font-weight: 700;
+    background-color: rgba(74, 222, 128, 0.15);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.gapNegative {
+    display: inline-block;
+    color: #f87171;
+    font-weight: 700;
+    background-color: rgba(248, 113, 113, 0.15);
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
 .formActions {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
+    gap: 0.875rem;
+    margin-top: 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
+
+    @media (min-width: 768px) {
+        flex-direction: column;
+    }
 }
 
 .actionButton {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 0.5rem;
     width: 100%;
-    padding: 14px;
+    padding: 0.75rem;
     border: none;
-    border-radius: 10px;
-    font-size: 16px;
+    border-radius: 0.75rem;
+    font-size: 15px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
     background: var(--accent-color);
     color: white;
+    box-sizing: border-box;
 
     &:hover {
         transform: translateY(-2px);
-        box-shadow: var(--shadow-strong);
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.3);
     }
 
     &.secondary {
-        background-color: var(--text-color-secondary);
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
     }
 } 

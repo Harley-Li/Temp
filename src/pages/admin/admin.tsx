@@ -30,15 +30,15 @@ const Admin: React.FC = () => {
         }
     }, [showMsg]);
 
-    useEffect(() => {
-        setTimeout(() => {
-            setToast({
-                type: 'SUCCESS',
-                message: 'Hi Harley, you have new message, would you like to check it.',
-                show: true,
-            });
-        }, 2000);
-    }, []);
+    // useEffect(() => {
+    //     setTimeout(() => {
+    //         setToast({
+    //             type: 'SUCCESS',
+    //             message: 'Hi Harley, you have new message, would you like to check it.',
+    //             show: true,
+    //         });
+    //     }, 2000);
+    // }, []);
 
     //add ability of resizing the panel
     const resizePanel = (e: React.MouseEvent) => {

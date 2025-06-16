@@ -3,10 +3,16 @@ import ConversationSection from './ConversationSection';
 // import axios from 'axios'; // Commented out as it's not used in simulated chat
 import './chatbotContainer.scss';
 import React, { useState, useRef, useEffect } from 'react';
+import InitialForm from '../appsInChat/InitialForm/InitialForm';
+import ProjectionView from '../appsInChat/ProjectionView/ProjectionView';
+import FinalSummary from '../appsInChat/FinalSummary/FinalSummary';
+import Sandbox from '../appsInChat/Sandbox/Sandbox';
+import { getLifestyleTarget } from '../../services/calculation';
 
 interface chatItem {
     content: string;
     role: string;
+    component?: React.ReactNode;
 }
 
 interface i_quick_reply {
@@ -19,43 +25,185 @@ interface i_msg {
     role: 'user' | 'ai';
     quick_reply: i_quick_reply[];
     ui_component: string;
+    component_props?: any;
 }
 
 const sampleChatMessages: i_msg[] = [
     // === Turn 1 ===
     {
-        content: "Hey Sarah! Welcome back. I noticed that there's been an increase in your income. Congratulations on that achievement! It might be a good time to review your retirement plan and see if any adjustments could better align with your new financial situation. Would you like to discuss this?",
+        content: "Hello! As a Fidelity Workplace Pension member, it's a great idea to check if you're on track for the retirement you want.\nLet's start by reviewing your current plan and goals.",
         role: "ai",
-        quick_reply: [
-            { name: "Yes, let's discuss", func: "discuss_adjustments" },
-            { name: "No, not right now", func: "decline_discussion" },
-            { name: "Tell me more first", func: "more_info_initial" }
-        ],
-        ui_component: "AIChatBubble"
+        quick_reply: [],
+        ui_component: "InitialForm",
+        component_props: {
+            initialData: {
+                currentPensionPot: 50000,
+                yourContribution: 200,
+                employerContribution: 100,
+                currentAge: 35,
+                retirementAge: 67,
+                lifestyleGoal: 'Moderate'
+            }
+        }
     },
     {
-        content: "Yes, I think that would be a good idea. What kind of adjustments do you suggest?",
+        content: "Okay, I've updated my details.",
         role: "user",
         quick_reply: [],
         ui_component: "UserChatBubble"
     },
     // === Turn 2 ===
     {
-        content: "Given the increase in your income, we might consider a few options. One possibility is increasing your contributions to your retirement plan. This can help you take advantage of compound growth and potentially secure a more comfortable retirement. We could also review your investment portfolio to ensure it aligns with your risk tolerance and retirement goals. To better support you, may I know what your concerns are about increasing contributions?",
+        content: "Analysis complete! Based on your data, I've created three alternative investment paths with different risk levels and compared them with your current trajectory.",
         role: "ai",
         quick_reply: [
-            { name: "Explain increasing contributions", func: "explain_contributions" },
-            { name: "Review investment portfolio", func: "review_portfolio" },
-            { name: "I have some concerns", func: "voice_concerns_contributions" }
+            { name: "Explore in Retirement Sandbox", func: "goto_sandbox" }
         ],
-        ui_component: "AIChatBubble"
+        ui_component: "ProjectionView",
+        component_props: {
+            plans: {
+                current: { 
+                    name: 'Current Path', 
+                    risk: 'Medium', 
+                    stockAllocation: 0.50, 
+                    annualReturn: 0.05, 
+                    color: '#38a169',
+                    currentPensionPot: 50000,
+                    yourContribution: 200,
+                    employerContribution: 100,
+                    currentAge: 35,
+                    retirementAge: 67,
+                    targetAmount: 622500
+                },
+                conservative: { 
+                    name: 'Cautious', 
+                    risk: 'Low', 
+                    stockAllocation: 0.30, 
+                    annualReturn: 0.035, 
+                    color: '#3182ce',
+                    currentPensionPot: 50000,
+                    yourContribution: 200,
+                    employerContribution: 100,
+                    currentAge: 35,
+                    retirementAge: 67,
+                    targetAmount: 622500
+                },
+                balanced: { 
+                    name: 'Balanced', 
+                    risk: 'High', 
+                    stockAllocation: 0.65, 
+                    annualReturn: 0.06, 
+                    color: '#dd6b20',
+                    currentPensionPot: 50000,
+                    yourContribution: 200,
+                    employerContribution: 100,
+                    currentAge: 35,
+                    retirementAge: 67,
+                    targetAmount: 622500
+                },
+                aggressive: { 
+                    name: 'Adventurous', 
+                    risk: 'Very-High', 
+                    stockAllocation: 0.85, 
+                    annualReturn: 0.075, 
+                    color: '#e53e3e',
+                    currentPensionPot: 50000,
+                    yourContribution: 200,
+                    employerContribution: 100,
+                    currentAge: 35,
+                    retirementAge: 67,
+                    targetAmount: 622500
+                }
+            },
+            userInput: {
+                currentPensionPot: 50000,
+                yourContribution: 200,
+                employerContribution: 100,
+                currentAge: 35,
+                retirementAge: 67,
+                lifestyleGoal: 'Moderate',
+                targetAmount: 622500
+            }
+        }
     },
     {
-        content: "Increasing contributions sounds sensible, can you explain more?",
+        content: "Take me to the Retirement Sandbox.",
         role: "user",
         quick_reply: [],
         ui_component: "UserChatBubble"
-    }
+    },
+    // === Turn 3 ===
+    {
+        content: "Welcome to the Retirement Sandbox! Here, you can experiment by adjusting different variables to see their real-time impact on your retirement future.",
+        role: "ai",
+        quick_reply: [
+        ],
+        ui_component: "Sandbox",
+        component_props: {
+            initialSandboxPlan: {
+                name: 'Sandbox',
+                risk: 'High',
+                stockAllocation: 0.65,
+                annualReturn: 0.06,
+                color: '#667eea',
+                currentPensionPot: 50000,
+                yourContribution: 200,
+                employerContribution: 100,
+                currentAge: 35,
+                retirementAge: 67,
+                targetAmount: 622500
+            },
+            initialUserInput: {
+                currentPensionPot: 50000,
+                yourContribution: 200,
+                employerContribution: 100,
+                currentAge: 35,
+                retirementAge: 67,
+                lifestyleGoal: 'Moderate',
+                targetAmount: 622500
+            }
+        }
+    },
+    {
+        content: "Okay, I've adjusted the sliders. How does this look for my goal?",
+        role: "user",
+        quick_reply: [],
+        ui_component: "UserChatBubble"
+    },
+    // === Turn 4 ===
+    {
+        content: "Here's a summary of your customized retirement plan. Based on your adjustments, I've calculated the projected outcomes and how they align with your retirement goals.",
+        role: "ai",
+        quick_reply: [
+            { name: "Go Back to Sandbox", func: "back_to_sandbox" },
+            { name: "Confirm Plan", func: "confirm_plan" }
+        ],
+        ui_component: "FinalSummary",
+        component_props: {
+            finalPlan: {
+                name: 'Sandbox',
+                risk: 'High',
+                stockAllocation: 0.65,
+                annualReturn: 0.06,
+                color: '#667eea',
+                currentPensionPot: 50000,
+                yourContribution: 200,
+                employerContribution: 100,
+                currentAge: 35,
+                retirementAge: 67,
+                targetAmount: 622500
+            },
+            userInput: {
+                currentPensionPot: 50000,
+                yourContribution: 200,
+                employerContribution: 100,
+                currentAge: 35,
+                retirementAge: 67,
+                lifestyleGoal: 'Moderate',
+                targetAmount: 622500
+            }
+        }
+    },
 ];
 
 const ChatbotContainer: React.FC = () => {
@@ -64,16 +212,141 @@ const ChatbotContainer: React.FC = () => {
     const currentDialogueStepRef = useRef<number>(0);
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const THINKING_MESSAGE_CONTENT = "AI is thinking..."; // English thinking message
+    const [userFormData, setUserFormData] = useState<any>(null);
+    const [finalPlanData, setFinalPlanData] = useState<any>(null);
 
     // Define min and max delay for AI thinking simulation
     const MIN_THINKING_DELAY = 1500; // 1.5 seconds
     const MAX_THINKING_DELAY = 4000; // 4 seconds
 
+    // Function to render the appropriate component based on ui_component
+    const renderComponent = (item: i_msg) => {
+        if (!item.ui_component || item.ui_component === 'AIChatBubble' || item.ui_component === 'UserChatBubble') {
+            return null;
+        }
+        
+        switch (item.ui_component) {
+            case 'InitialForm':
+                return <InitialForm 
+                    initialData={item.component_props?.initialData} 
+                    onSubmit={handleFormSubmit} 
+                />;
+            case 'ProjectionView':
+                // If we have user form data, use it to generate plans
+                const plans = userFormData ? generatePlansFromUserData(userFormData) : item.component_props?.plans;
+                const userInput = userFormData ? {
+                    ...userFormData,
+                    targetAmount: getLifestyleTarget(userFormData.lifestyleGoal)
+                } : item.component_props?.userInput;
+                
+                return <ProjectionView 
+                    plans={plans}
+                    userInput={userInput}
+                    onGoToSandbox={() => handleGoToSandbox()}
+                />;
+            case 'Sandbox':
+                const initialSandboxPlan = userFormData ? {
+                    name: 'Sandbox',
+                    risk: 'High',
+                    stockAllocation: 0.65,
+                    annualReturn: 0.06,
+                    color: '#667eea',
+                    ...userFormData,
+                    targetAmount: getLifestyleTarget(userFormData.lifestyleGoal)
+                } : item.component_props?.initialSandboxPlan;
+                
+                const initialUserInput = userFormData ? {
+                    ...userFormData,
+                    targetAmount: getLifestyleTarget(userFormData.lifestyleGoal)
+                } : item.component_props?.initialUserInput;
+                
+                return <Sandbox 
+                    initialSandboxPlan={initialSandboxPlan}
+                    initialUserInput={initialUserInput}
+                    onFinalize={(finalPlan) => handleFinalizeSandbox(finalPlan)}
+                />;
+            case 'FinalSummary':
+                return <FinalSummary 
+                    finalPlan={finalPlanData || item.component_props?.finalPlan}
+                    userInput={userFormData || item.component_props?.userInput}
+                    onConfirm={() => console.log('Plan confirmed')}
+                    onGoBack={() => console.log('Back to sandbox')}
+                />;
+            default:
+                return null;
+        }
+    };
+
+    // Generate plans based on user form data
+    const generatePlansFromUserData = (userData: any) => {
+        const targetAmount = getLifestyleTarget(userData.lifestyleGoal);
+        return {
+            current: { 
+                name: 'Current Path', 
+                risk: 'Medium', 
+                stockAllocation: 0.50, 
+                annualReturn: 0.05, 
+                color: '#38a169',
+                ...userData,
+                targetAmount
+            },
+            conservative: { 
+                name: 'Cautious', 
+                risk: 'Low', 
+                stockAllocation: 0.30, 
+                annualReturn: 0.035, 
+                color: '#3182ce',
+                ...userData,
+                targetAmount
+            },
+            balanced: { 
+                name: 'Balanced', 
+                risk: 'High', 
+                stockAllocation: 0.65, 
+                annualReturn: 0.06, 
+                color: '#dd6b20',
+                ...userData,
+                targetAmount
+            },
+            aggressive: { 
+                name: 'Adventurous', 
+                risk: 'Very-High', 
+                stockAllocation: 0.85, 
+                annualReturn: 0.075, 
+                color: '#e53e3e',
+                ...userData,
+                targetAmount
+            }
+        };
+    };
+
+    // Handle form submission from InitialForm
+    const handleFormSubmit = (data: any) => {
+        console.log('Form submitted:', data);
+        // Store the user form data
+        setUserFormData({
+            ...data,
+            targetAmount: getLifestyleTarget(data.lifestyleGoal)
+        });
+        
+        // Move to the next AI message (ProjectionView)
+        handleUserSubmit("Okay, I've updated my details.", false);
+    };
+
+    // Handle click on "Go to Sandbox" button
+    const handleGoToSandbox = () => {
+        handleUserSubmit("Take me to the Retirement Sandbox.", false);
+    };
+
     useEffect(() => {
         if (sampleChatMessages.length > 0) {
             const firstMessage = sampleChatMessages[0];
             if (firstMessage.role === 'ai') {
-                setChatHistory([{ content: firstMessage.content, role: firstMessage.role }]);
+                setChatHistory([{ 
+                    content: firstMessage.content, 
+                    role: firstMessage.role,
+                    component: renderComponent(firstMessage)
+                }]);
                 currentDialogueStepRef.current = 0; // This AI message (index 0) is now active
                 if (firstMessage.quick_reply && firstMessage.quick_reply.length > 0) {
                     setCurrentQuickReplies(firstMessage.quick_reply);
@@ -106,7 +379,11 @@ const ChatbotContainer: React.FC = () => {
 
             setTimeout(() => {
                 setChatHistory(prev => prev.filter(msg => msg.content !== THINKING_MESSAGE_CONTENT));
-                setChatHistory(prev => [...prev, { content: aiMessageObject.content, role: aiMessageObject.role }]);
+                setChatHistory(prev => [...prev, { 
+                    content: aiMessageObject.content, 
+                    role: aiMessageObject.role,
+                    component: renderComponent(aiMessageObject)
+                }]);
                 
                 currentDialogueStepRef.current = aiMessageIndex; // This AI message is now the active one
 
@@ -142,7 +419,10 @@ const ChatbotContainer: React.FC = () => {
     };
 
     const handleUserSubmit = (userInput: string, isFromQuickReply: boolean) => {
-        setChatHistory(prev => [...prev, { content: userInput, role: 'user' }]);
+        setChatHistory(prev => [...prev, { 
+            content: userInput, 
+            role: 'user'
+        }]);
         setCurrentQuickReplies([]); // Clear quick replies as soon as user makes a choice or types
         if (inputRef.current) inputRef.current.value = ''; // Clear textarea after submission
 
@@ -187,6 +467,14 @@ const ChatbotContainer: React.FC = () => {
             e.preventDefault();
             doSearch();
         }
+    };
+
+    const handleFinalizeSandbox = (finalPlan: any) => {
+        // Store the final plan
+        setFinalPlanData(finalPlan);
+        
+        // Move to the FinalSummary component
+        handleUserSubmit("Review this Simulation", false);
     };
 
     return (

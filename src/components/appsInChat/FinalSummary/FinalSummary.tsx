@@ -1,5 +1,5 @@
 import React from 'react';
-import { SandboxPlan, UserInput } from '../../../types';
+import { SandboxPlan, UserInput } from '../../../types/index';
 import { calculateProjection } from '../../../services/calculation';
 import styles from './FinalSummary.module.scss';
 
@@ -16,17 +16,17 @@ const FinalSummary: React.FC<FinalSummaryProps> = ({ finalPlan, userInput, onCon
 
     let summaryText = `Here's the summary of your simulated plan to reach your <strong>'${userInput.lifestyleGoal}'</strong> lifestyle goal:\n\n` +
                       `<ul>` +
-                      `<li><strong>Retirement Age:</strong> ${finalPlan.retirementAge}</li>` +
-                      `<li><strong>Your Monthly Contribution:</strong> £${finalPlan.yourContribution}</li>` +
-                      `<li><strong>Employer Monthly Contribution:</strong> £${finalPlan.employerContribution}</li>` +
-                      (boostValue > 0 ? `<li><strong>One-time Boost:</strong> £${boostValue}</li>` : '') +
+                      `<li><strong>Retirement Age:</strong> <span class="${styles.valueHighlight}">${finalPlan.retirementAge}</span></li>` +
+                      `<li><strong>Your Monthly Contribution:</strong> <span class="${styles.valueHighlight}">£${finalPlan.yourContribution}</span></li>` +
+                      `<li><strong>Employer Monthly Contribution:</strong> <span class="${styles.valueHighlight}">£${finalPlan.employerContribution}</span></li>` +
+                      (boostValue > 0 ? `<li><strong>One-time Boost:</strong> <span class="${styles.valueHighlight}">£${boostValue.toLocaleString()}</span></li>` : '') +
                       `</ul>\n` +
-                      `This projects a final pot of <strong>£${(result.finalValue / 1000).toFixed(1)}k</strong>. `;
+                      `This projects a final pot of <span class="${styles.finalValue}">£${(result.finalValue / 1000).toFixed(1)}k</span>. `;
 
     if (result.gap > 0) {
-        summaryText += `This is still <span class="gap-negative">£${(result.gap / 1000).toFixed(1)}k</span> short of your goal. You might need to consider increasing contributions further, delaying retirement, or perhaps exploring a plan with a higher growth potential (and higher risk).`;
+        summaryText += `This is still <span class="${styles.gapNegative}">£${(result.gap / 1000).toFixed(1)}k</span> short of your goal. You might need to consider increasing contributions further, delaying retirement, or perhaps exploring a plan with a higher growth potential (and higher risk).`;
     } else {
-        summaryText += `This comfortably meets your goal with a surplus of <span class="gap-positive">+£${(Math.abs(result.gap) / 1000).toFixed(1)}k</span>. This looks like a solid strategy!`;
+        summaryText += `This comfortably meets your goal with a surplus of <span class="${styles.gapPositive}">+£${(Math.abs(result.gap) / 1000).toFixed(1)}k</span>. This looks like a solid strategy!`;
     }
 
     const actionText = `\n\n<strong>Next Steps:</strong>\n` +
@@ -34,8 +34,9 @@ const FinalSummary: React.FC<FinalSummaryProps> = ({ finalPlan, userInput, onCon
                          `What would you like to do now?`;
 
     return (
-        <div>
-            <div dangerouslySetInnerHTML={{ __html: (summaryText + actionText).replace(/\n/g, '<br />') }} />
+        <div className={styles.summaryContainer}>
+            <h4>Retirement Plan Summary</h4>
+            <div className={styles.summaryContent} dangerouslySetInnerHTML={{ __html: (summaryText + actionText).replace(/\n/g, '<br />') }} />
             <div className={styles.formActions}>
                 <button onClick={onConfirm} className={styles.actionButton}>
                     I'm happy with this plan
