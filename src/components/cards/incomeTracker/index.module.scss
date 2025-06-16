@@ -1,18 +1,18 @@
-@import '../../../styles/colors.scss';
+@use '../../../styles/colors' as colors;
 
 // --- Variables ---
-$color-primary: $primary-blue; // 修改为主蓝色
-$color-secondary: $text-primary; // 主标题颜色
-$color-text-light: $text-secondary; // 描述/页脚文本
-$color-border-light: $border-light; // 切换按钮边框
+$color-primary: colors.$primary-blue; // 修改为主蓝色
+$color-secondary: colors.$text-primary; // 主标题颜色
+$color-text-light: colors.$text-secondary; // 描述/页脚文本
+$color-border-light: colors.$border-light; // 切换按钮边框
 $color-bg-light: #f0f0f0; // 图标容器背景
 $color-bg-hover: #f5f5f5; // 切换按钮悬停，图表列悬停
 $color-bg-active: #e6e6e6; // 切换按钮活动
-$color-bg-highlight: rgba($primary-blue, 0.1); // 高亮列背景
-$color-chart-line: $chart-line; // 图表线条颜色
-$color-chart-dot: $chart-dot; // 图表点颜色
+$color-bg-highlight: rgba(colors.$primary-blue, 0.1); // 高亮列背景
+$color-chart-line: colors.$chart-line; // 图表线条颜色
+$color-chart-dot: colors.$chart-dot; // 图表点颜色
 $color-white: #fff;
-$color-grey-bg: $bg-secondary; // 应用背景
+$color-grey-bg: colors.$bg-secondary; // 应用背景
 
 $spacing-xs: 5px;
 $spacing-sm: 10px;
@@ -54,7 +54,7 @@ $transition-ease-fast: ease;
 .card {
   background-color: $color-white;
   border-radius: $border-radius-lg;
-  box-shadow: $shadow-light;
+  box-shadow: colors.$shadow-light;
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
@@ -248,7 +248,7 @@ $transition-ease-fast: ease;
     .percentageChange {
       font-size: 40px;
       font-weight: 600;
-      color: $text-primary; // 修改为主蓝色
+      color: $color-secondary; // 修改为主蓝色
     }
 
     .footerText {

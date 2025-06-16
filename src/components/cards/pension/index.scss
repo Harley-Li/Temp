@@ -1,9 +1,9 @@
-@import '../../../styles/colors.scss';
+@use '../../../styles/colors' as colors;
 
 .card {
-    background-color: $bg-primary;
+    background-color: colors.$bg-primary;
     border-radius: 20px;
-    box-shadow: $shadow-light;
+    box-shadow: colors.$shadow-light;
     padding: 1.5rem;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     position: relative;
@@ -19,7 +19,7 @@
         padding-top: 13px;
 
         &:not(:last-child) {
-            border-right: 1px solid $border-light;
+            border-right: 1px solid colors.$border-light;
             padding-right: 1.5rem;
         }
     }
@@ -40,7 +40,7 @@
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 15px;
-    color: $text-primary;
+    color: colors.$text-primary;
 }
 
 .card-item {
@@ -57,13 +57,13 @@
 
     .info-text {
         font-size: 14px;
-        color: $text-primary;
+        color: colors.$text-primary;
         display: block;
 
         span {
             display: block;
             margin-top: .75rem;
-            color: $text-primary;
+            color: colors.$text-primary;
         }
     }
 }
@@ -72,13 +72,13 @@
     font-size: 26px;
     font-weight: 400;
     line-height: 1;
-    color: $text-primary;
+    color: colors.$text-primary;
 }
 
 .large-value {
     font-size: 3rem;
     font-weight: 700;
-    color: $text-primary;
+    color: colors.$text-primary;
     margin-bottom: 10px;
     letter-spacing: -1px;
     line-height: 1;
@@ -86,7 +86,7 @@
 
 .small-text {
     font-size: 14px;
-    color: $text-secondary;
+    color: colors.$text-secondary;
     margin-top: 5px;
     line-height: 1.5;
 
@@ -104,11 +104,11 @@
     white-space: nowrap;
 
     &.positive {
-        color: $positive-color;
+        color: colors.$positive-color;
     }
 
     &.negative {
-        color: $negative-color;
+        color: colors.$negative-color;
     }
 }
 
@@ -118,7 +118,7 @@
     margin-top: .5rem;
     display: inline-flex;
     align-items: center;
-    color: $primary-blue;
+    color: colors.$primary-blue;
     text-decoration: none;
     font-weight: 500;
     transition: color 0.3s ease;
@@ -151,22 +151,22 @@
 
 .contribution-label {
     font-size: 15px;
-    color: $text-primary;
+    color: colors.$text-primary;
     margin-bottom: 5px;
 }
 
 .contribution-value {
     font-size: 1.6em;
     font-weight: 600;
-    color: $text-primary;
+    color: colors.$text-primary;
 
     &.na {
-        color: $negative-color;
+        color: colors.$negative-color;
     }
 }
 
 .contribution-date {
     font-size: 13px;
-    color: #2c3e50;
+    color: colors.$text-primary;
     margin-top: 5px;
 }

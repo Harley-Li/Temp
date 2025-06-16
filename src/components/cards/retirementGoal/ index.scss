@@ -1,11 +1,11 @@
-@import '../../../styles/colors.scss';
+@use '../../../styles/colors' as colors;
 
 .retirement-goal {
     display: flex;
     column-gap: 2.5rem;
-    background-color: $bg-primary;
+    background-color: colors.$bg-primary;
     border-radius: 20px;
-    box-shadow: $shadow-light;
+    box-shadow: colors.$shadow-light;
     padding: 1.5rem;
     width: fit-content;
     transition: width 0.3s linear;
@@ -20,7 +20,7 @@
             font-weight: 400;
             line-height: 1;
             margin-bottom: 1.5rem;
-            color: $text-primary;
+            color: colors.$text-primary;
         }
         .progress-val {
             display: block;
@@ -28,7 +28,7 @@
             margin: -0.5rem auto;
             font-size: 1.25rem;
             font-weight: 600;
-            color: $text-primary;
+            color: colors.$text-primary;
         }
     }
 
@@ -41,7 +41,7 @@
             font-weight: 400;
             line-height: 1.5;
             margin-bottom: 1.5rem;
-            color: $text-primary;
+            color: colors.$text-primary;
 
             strong {
                 font-weight: 600;

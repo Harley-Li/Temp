@@ -1,10 +1,10 @@
-@import '../../../styles/colors.scss';
+@use '../../../styles/colors' as colors;
 
 .asset-allocation-card {
-  background-color: $bg-primary;
+  background-color: colors.$bg-primary;
   border-radius: 20px;
   padding: 1.5rem;
-  box-shadow: $shadow-light;
+  box-shadow: colors.$shadow-light;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   display: flex;
   flex-direction: column;
@@ -14,7 +14,7 @@
   .card-title {
     font-size: 26px;
     font-weight: 400;
-    color: $text-primary;
+    color: colors.$text-primary;
     margin-bottom: 20px;
   }
 
@@ -30,7 +30,7 @@
     flex-direction: column;
     gap: 15px;
     font-size: 18px;
-    color: $text-secondary;
+    color: colors.$text-secondary;
     flex-shrink: 0;
 
     .legend-item {
@@ -39,7 +39,7 @@
       gap: 10px;
 
       span {
-        color: $text-primary;
+        color: colors.$text-primary;
       }
     }
 
@@ -68,10 +68,10 @@
       position: absolute;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       box-sizing: border-box;
-      border: 3px solid $bg-primary;
+      border: 3px solid colors.$bg-primary;
 
       span {
-        color: $text-light;
+        color: colors.$text-light;
       }
     }
   }
