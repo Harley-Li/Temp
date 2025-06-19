@@ -1,0 +1,146 @@
+@use '../../../styles/glassmorphism.scss';
+
+.checkboxContainer {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  font-family: var(--glass-font-family);
+}
+
+.hiddenInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkmark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.375rem;
+  height: 1.375rem;
+  border-radius: 0.375rem;
+  margin-right: 0.5rem;
+  background: var(--glass-bg-primary);
+  border: 0.0625rem solid var(--glass-border-medium);
+  box-shadow: var(--glass-shadow-sm);
+  backdrop-filter: var(--glass-backdrop-filter);
+  -webkit-backdrop-filter: var(--glass-backdrop-filter);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  
+  // 内部填充效果区域（通过边框实现）
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0%;
+    height: 0%;
+    border-radius: 0.175rem;
+    border: 0 solid var(--glass-primary);
+    background-color: transparent;
+    transform: translate(-50%, -50%);
+    transition: all 0.55s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  
+  // 选中状态的对勾图标
+  &::after {
+    content: "";
+    position: absolute;
+    width: 0.25rem;
+    height: 0.5625rem;
+    border: solid transparent;
+    border-width: 0 0.125rem 0.125rem 0;
+    top: 50%;
+    left: 56%;
+    transform: translate(-75%, -65%) rotate(45deg) scale(0);
+    opacity: 0;
+    transition: 
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s,
+      opacity 0.4s ease 0.15s,
+      border-color 0.2s ease 0.15s;
+    z-index: 2;
+  }
+}
+
+.hiddenInput:checked + .checkmark {
+  border-color: var(--glass-primary);
+  
+  // 填充效果是通过边框宽度动画实现
+  &::before {
+    width: 100%;
+    height: 100%;
+    border-width: 0.5rem;
+    transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  &::after {
+    opacity: 1;
+    transform: translate(-75%, -65%) rotate(45deg) scale(1);
+    border-color: var(--glass-text-primary);
+    transition:
+      transform 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s,
+      opacity 0.4s ease 0.25s,
+      border-color 0.2s ease;
+  }
+}
+
+.hiddenInput:focus-visible + .checkmark {
+  box-shadow: 0 0 0 0.125rem var(--glass-primary-light);
+}
+
+// 悬停效果
+.checkboxContainer:hover .checkmark:not(:disabled) {
+  transform: translateY(-0.0625rem);
+  box-shadow: var(--glass-shadow-md);
+}
+
+// 禁用状态
+.checkboxContainer.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  
+  .checkmark {
+    background: var(--glass-bg-disabled);
+    box-shadow: none;
+  }
+}
+
+// 标签样式
+.label {
+  font-size: 0.875rem;
+  color: var(--glass-text-primary);
+  transition: color 0.3s ease;
+}
+
+// 深色模式适配
+[data-theme="dark"] {
+  .checkmark {
+    background: var(--glass-bg-secondary);
+    
+    &::before {
+      border-color: var(--glass-primary);
+    }
+  }
+  
+  .hiddenInput:checked + .checkmark {
+    border-color: var(--glass-primary);
+    
+    &::after {
+      border-color: var(--glass-text-primary);
+    }
+  }
+  
+  .label {
+    color: var(--glass-text-secondary);
+  }
+  
+  .checkboxContainer:hover .label {
+    color: var(--glass-text-primary);
+  }
+} 

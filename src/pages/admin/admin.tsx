@@ -29,39 +29,18 @@ const Admin: React.FC = () => {
         }
     }, [showMsg]);
 
-    //add ability of resizing the panel
-    const resizePanel = (e: React.MouseEvent) => {
-        let mainLayout = mainContainer.current as HTMLElement;
-        const initMainWidth = (mainPanel.current as HTMLElement).getBoundingClientRect().width;
-
-        let startX = e.clientX;
-        const mouseMoveHandler = function (mouse_e: MouseEvent) {
-            document.body.classList.add('resizing');
-            const maxWidth = mainLayout.getBoundingClientRect().width - 41.5 * 16;
-            const minWidth = 812;
-
-            if (initMainWidth + (mouse_e.clientX - startX) < maxWidth && initMainWidth + (mouse_e.clientX - startX) > minWidth) {
-                mainLayout.style.gridTemplateColumns = `${initMainWidth + (mouse_e.clientX - startX)}px 1.5rem 1fr`;
-            }
-        }
-
-        const mouseUpHandler = function () {
-            document.removeEventListener('mousemove', mouseMoveHandler);
-            document.removeEventListener('mouseup', mouseUpHandler);
-            document.body.classList.remove('resizing');
-        }
-
-        document.addEventListener('mousemove', mouseMoveHandler);
-        document.addEventListener('mouseup', mouseUpHandler);
-    };
-
     return (
         <>
             <div className="app-container">
                 <div className={`main-content-area`}>
 
-                    <div className={`conversation-container ${showModal && 'expand'}`} ref={mainContainer}>
-                        <main ref={mainPanel}>
+                    <div className='conversation-container' ref={mainContainer}>
+                        <main>
+                            <div className='chatbot-container'>
+                                <Chatbot></Chatbot>
+                            </div>
+                        </main>
+                        {/* <main ref={mainPanel}>
                             <header>
                                 <a href="https://github.com/Harley-Li/Me" className="site-logo"></a> <span>Fidelity UK</span>
                                 <div className="tab-list">
@@ -129,10 +108,10 @@ const Admin: React.FC = () => {
                                 resizePanel(e);
                             }}>
                             <div className='bar'></div>
-                        </div>
-                        <aside aria-labelledby="sidebar_title" >
-                            <Chatbot></Chatbot>
-                        </aside>
+                        </div> */}
+                        
+                            {/* <Chatbot></Chatbot> */}
+                        
                     </div>
                 </div>
             </div>

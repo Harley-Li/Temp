@@ -1,0 +1,117 @@
+@use '../../../styles/glassmorphism.scss';
+
+.radioContainer {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  font-family: var(--glass-font-family);
+}
+
+.hiddenInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.radiomark {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  background: var(--glass-bg-primary);
+  border: 0.0625rem solid var(--glass-border-medium);
+  box-shadow: var(--glass-shadow-sm);
+  backdrop-filter: var(--glass-backdrop-filter);
+  -webkit-backdrop-filter: var(--glass-backdrop-filter);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  // 选中状态的圆点
+  &::after {
+    content: "";
+    position: absolute;
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    background-color: white;
+    transform: scale(0);
+    opacity: 0;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}
+
+.hiddenInput:checked + .radiomark {
+  background: var(--glass-primary);
+  border-color: transparent;
+  
+  &::after {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.hiddenInput:focus-visible + .radiomark {
+  box-shadow: 0 0 0 0.125rem var(--glass-primary-light);
+}
+
+// 悬停效果
+.radioContainer:hover .radiomark:not(:disabled) {
+  transform: translateY(-0.0625rem);
+  box-shadow: var(--glass-shadow-md);
+}
+
+// 禁用状态
+.radioContainer.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  
+  .radiomark {
+    background: var(--glass-bg-disabled);
+    box-shadow: none;
+  }
+}
+
+// 标签样式
+.label {
+  font-size: 0.875rem;
+  color: var(--glass-text-primary);
+  transition: color 0.3s ease;
+}
+
+// 深色模式适配
+[data-theme="dark"] {
+  .radiomark {
+    background: var(--glass-bg-secondary);
+  }
+  
+  .hiddenInput:checked + .radiomark {
+    background: var(--glass-primary);
+  }
+  
+  .label {
+    color: var(--glass-text-secondary);
+  }
+  
+  .radioContainer:hover .label {
+    color: var(--glass-text-primary);
+  }
+}
+
+// 单选按钮组样式
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  
+  &.horizontal {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+  }
+} 
