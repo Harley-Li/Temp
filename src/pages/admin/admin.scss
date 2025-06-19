@@ -3,6 +3,31 @@
     background-size: cover;
     background-attachment: fixed;
     backdrop-filter: blur(10px);
+
+    @mixin scrollbar {
+        &::-webkit-scrollbar {
+            width: 8px;
+            background-color: transparent;
+        }
+
+        &::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, rgba(232, 234, 236, 0.5), #1b3b5c, rgba(232, 234, 236, 0.5));
+            border-radius: 10px;
+        }
+
+        &::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #1b3b5c, #e8eaec, #1b3b5c);
+        }
+
+        &::-webkit-scrollbar-corner {
+            background-color: transparent;
+        }
+    }
+
     header {
         min-height: 2.25rem;
         margin-bottom: 2rem;
@@ -209,7 +234,7 @@
         display: flex;
         overflow: hidden;
 
-        .history-container {
+        .conversation-container {
             flex-grow: 1;
             display: flex;
 
@@ -218,7 +243,6 @@
                 backdrop-filter: blur(8px);
                 box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
                 border: 1px solid rgba(255, 255, 255, 0.18);
-                flex-grow: 1;
                 min-width: 100%;
                 padding: 1.5rem .125rem 1.5rem 1.5rem;
                 border-radius: 1rem;
@@ -231,52 +255,9 @@
                     overflow: auto;
                     container-type: inline-size;
                     padding-right: .875rem;
+                    scrollbar-gutter: stable;
 
-                    @container (max-width: 1300px) {
-                        & > * {
-                            &:nth-child(3) {
-                                order: 4;
-                            }
-                            &.retirement-goal {
-                                align-self: auto;
-                            }
-                        }
-                    }
-
-                    &::-webkit-scrollbar {
-                        width: 8px;
-                        background-color: transparent;
-                    }
-
-                    &::-webkit-scrollbar-track {
-                        background-color: transparent;
-                    }
-
-                    &::-webkit-scrollbar-thumb {
-                        background: linear-gradient(45deg, rgba(232, 234, 236, 0.5), #1b3b5c, rgba(232, 234, 236, 0.5));
-                        border-radius: 10px;
-                    }
-
-                    &::-webkit-scrollbar-thumb:hover {
-                        background: linear-gradient(45deg, #1b3b5c, #e8eaec, #1b3b5c);
-                    }
-
-                    &::-webkit-scrollbar-corner {
-                        background-color: transparent;
-                    }
-                }
-
-                h1 {
-                    font-size: 2.5rem;
-                    font-weight: 400;
-                    color: #4169e1;
-                    margin-bottom: 1.5rem;
-                }
-
-                .top-row {
-                    display: flex;
-                    column-gap: 1.5rem;
-                    height: 375px;
+                    @include scrollbar;
                 }
             }
 
@@ -292,28 +273,30 @@
             }
 
             &.expand {
+                display: grid;
+                grid-template-columns: calc(100% - 41.5rem) 1.5rem 1fr;
+
                 main {
-                    min-width: calc(100% - 1.5rem - 40rem);
-                    width: calc(100% - 1.5rem - 40rem);
-                    max-width: calc(100% - 1.5rem - 40rem);
-                    padding: 1.5rem .125rem 1.5rem 1.5rem;
+                    max-height: 100%;
+                    overflow: hidden;
                 }
 
                 aside {
                     min-width: 40rem;
-                    max-width: 40rem;
-                    width: 40rem;
+                    width: 100%;
+                    border: 1px solid rgba(255, 255, 255, 0.18);
                 }
 
                 .resizer {
-                    width: 1.5rem;
                     display: flex;
                     justify-content: center;
 
                     &:hover {
                         cursor: col-resize;
 
-                        .bar {
+                        &:before {
+                            content: "";
+                            display: block;
                             width: 0;
                             border-left: 2px solid transparent;
                             border-image: linear-gradient(to bottom, transparent, #e8eaec, transparent) 1;

@@ -3,8 +3,8 @@ import './index.scss';
 
 const PensionDashboard: React.FC = () => {
     return (
-        <div className="card combined-pension-card">
-            <div className="card-section overview-section">
+        <>
+            <div className="card overview-card">
                 <div>
                     <div className="card-subtitle">BBC Pension Scheme (AVC)</div>
                     <div className="small-text">
@@ -20,7 +20,7 @@ const PensionDashboard: React.FC = () => {
                 </div>
             </div>
 
-            <div className="card-section performance-section">
+            <div className="card performance-card">
                 <h3 className="card-title">Investment Performance</h3>
                 <div className="card-item">
                     <div className="info-text">
@@ -29,7 +29,7 @@ const PensionDashboard: React.FC = () => {
                     <div className="value-indicator positive">+0.75%</div>
                 </div>
 
-                <div className="card-item ">
+                <div className="card-item">
                     <div className="info-text">
                         Change in investment <span>26 May 2024 to 26 May 2025</span>
                     </div>
@@ -41,14 +41,14 @@ const PensionDashboard: React.FC = () => {
                 </a>
             </div>
 
-            <div className="card-section contributions-section">
+            <div className="card contributions-card">
                 <h3 className="card-title">Recent Contributions</h3>
                 <div className="card-item">
                     <div className="info-text">Your last contribution:</div>
                     <div className="value-indicator">N/A</div>
                 </div>
 
-                <div className="card-item ">
+                <div className="card-item">
                     <div className="info-text">
                         Employer's last contribution: <span>made on 03 Jun 2024</span>
                     </div>
@@ -59,7 +59,7 @@ const PensionDashboard: React.FC = () => {
                     View all contributions →
                 </a>
             </div>
-        </div>
+        </>
     );
 };
 

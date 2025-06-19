@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './Admin.scss';
 // import Nav from '../../components/admin/navbar/nav';
 import Chatbot from '../../components/chatbot/chatbotContainer';
@@ -17,10 +17,9 @@ const Admin: React.FC = () => {
         message: '',
         show: false,
     });
-    const [isDragging, setIsDragging] = useState('');
+
     const mainPanel = useRef<HTMLDivElement>(null);
-    const resizer = useRef<HTMLDivElement>(null);
-    const chatBot = useRef<HTMLDivElement>(null);
+    const mainContainer = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if (showMsg) {
@@ -30,71 +29,44 @@ const Admin: React.FC = () => {
         }
     }, [showMsg]);
 
-    // useEffect(() => {
-    //     setTimeout(() => {
-    //         setToast({
-    //             type: 'SUCCESS',
-    //             message: 'Hi Harley, you have new message, would you like to check it.',
-    //             show: true,
-    //         });
-    //     }, 2000);
-    // }, []);
-
     //add ability of resizing the panel
     const resizePanel = (e: React.MouseEvent) => {
-        let main = mainPanel.current as HTMLElement;
-        let sideBar = chatBot.current as HTMLElement;
-        const initMainWidth = main.getBoundingClientRect().width;
-        const initSideWidth = sideBar.getBoundingClientRect().width;
-        
-        // The current position of mouse in current browser
-        let startX = e.clientX;
+        let mainLayout = mainContainer.current as HTMLElement;
+        const initMainWidth = (mainPanel.current as HTMLElement).getBoundingClientRect().width;
 
+        let startX = e.clientX;
         const mouseMoveHandler = function (mouse_e: MouseEvent) {
-                main.style.width = initMainWidth + (mouse_e.clientX - startX) + 'px';
-                main.style.minWidth = 'unset';
-                sideBar.style.width = initSideWidth + (mouse_e.clientX + startX) + 'px';
-                sideBar.style.minWidth = 'unset';
+            document.body.classList.add('resizing');
+            const maxWidth = mainLayout.getBoundingClientRect().width - 41.5 * 16;
+            const minWidth = 812;
+
+            if (initMainWidth + (mouse_e.clientX - startX) < maxWidth && initMainWidth + (mouse_e.clientX - startX) > minWidth) {
+                mainLayout.style.gridTemplateColumns = `${initMainWidth + (mouse_e.clientX - startX)}px 1.5rem 1fr`;
             }
-    
+        }
 
         const mouseUpHandler = function () {
-            // Remove the handlers of 'mousemove' and 'mouseup'
             document.removeEventListener('mousemove', mouseMoveHandler);
             document.removeEventListener('mouseup', mouseUpHandler);
-            //dragEle.classList.remove('resizing');
-            setIsDragging('');
-        };
+            document.body.classList.remove('resizing');
+        }
 
         document.addEventListener('mousemove', mouseMoveHandler);
         document.addEventListener('mouseup', mouseUpHandler);
-        setIsDragging('dragging');
     };
 
     return (
         <>
             <div className="app-container">
-                {!showModal ? (
-                    <button
-                        className="chatbot-trigger"
-                        aria-label="chat bot"
-                        aria-haspopup="dialog"
-                        title="chatbot"
-                        onClick={() => setShowModal(!showModal)}
-                    ></button>
-                ) : (
-                    <></>
-                )}
                 <div className={`main-content-area`}>
-                    {/* <Nav /> */}
 
-                    <div className={`history-container ${showModal && 'expand'}`}>
+                    <div className={`conversation-container ${showModal && 'expand'}`} ref={mainContainer}>
                         <main ref={mainPanel}>
                             <header>
                                 <a href="https://github.com/Harley-Li/Me" className="site-logo"></a> <span>Fidelity UK</span>
-                                {/* <div className="tab-list">
+                                <div className="tab-list">
                                     <input type="radio" name="top-tabs" id="" aria-label="Home" defaultChecked={true} />
-                                </div> */}
+                                </div>
                                 <div className="search-box">
                                     <input type="search" name="" id="" placeholder="Enter your search request..." />
                                 </div>
@@ -152,13 +124,13 @@ const Admin: React.FC = () => {
                                 <RetirementGoal></RetirementGoal>
                             </div>
                         </main>
-                        <div className='resizer' ref={resizer}
+                        <div className='resizer'
                             onMouseDown={(e: React.MouseEvent) => {
                                 resizePanel(e);
                             }}>
                             <div className='bar'></div>
                         </div>
-                        <aside aria-labelledby="sidebar_title" ref={chatBot} >
+                        <aside aria-labelledby="sidebar_title" >
                             <Chatbot></Chatbot>
                         </aside>
                     </div>

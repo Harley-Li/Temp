@@ -1,0 +1,97 @@
+.welcome-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  background: var(--background-gradient, linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%));
+  color: var(--text-color, #333333);
+  transition: background 0.3s ease, color 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: var(--background-pattern, radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4) 0%, transparent 10%),
+                                       radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.4) 0%, transparent 15%));
+    opacity: 0.8;
+    z-index: 0;
+    pointer-events: none;
+  }
+  
+  .theme-switcher {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    z-index: 10;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  > button:not(.switcher-container) {
+    padding: 12px 24px;
+    font-size: 1rem;
+    cursor: pointer;
+    background-color: var(--button-color, #4285f4);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(5px);
+    
+    &:hover {
+      background-color: var(--button-hover-color, #3367d6);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+:root {
+  --background-color: #ffffff;
+  --background-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --background-pattern: radial-gradient(circle at 30% 30%, rgba(66, 133, 244, 0.1) 0%, transparent 10%),
+                      radial-gradient(circle at 70% 60%, rgba(66, 133, 244, 0.1) 0%, transparent 15%);
+  --text-color: #333333;
+  --button-color: rgba(66, 133, 244, 0.9);
+  --button-hover-color: rgba(51, 103, 214, 0.95);
+}
+
+[data-theme="dark"] {
+  --background-color: #121212;
+  --background-gradient: linear-gradient(135deg, #232526 0%, #1c1c2a 100%);
+  --background-pattern: radial-gradient(circle at 30% 30%, rgba(92, 107, 192, 0.15) 0%, transparent 15%),
+                      radial-gradient(circle at 70% 60%, rgba(92, 107, 192, 0.1) 0%, transparent 20%);
+  --text-color: #ffffff;
+  --button-color: rgba(92, 107, 192, 0.9);
+  --button-hover-color: rgba(63, 81, 181, 0.95);
+} 

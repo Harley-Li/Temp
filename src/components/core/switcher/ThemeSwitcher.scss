@@ -1,0 +1,158 @@
+.theme-switcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  .switcher-container {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 180px;
+    height: 40px;
+    border-radius: 20px;
+    // 玻璃质感背景 - 半透明背景
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    cursor: pointer;
+    padding: 2px;
+    outline: none;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    
+    // 选项样式
+    .light-option, .dark-option {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      padding: 0 8px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      
+      .icon {
+        margin-right: 6px;
+        font-size: 16px;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+      }
+      
+      .text {
+        font-size: 14px;
+        white-space: nowrap;
+        font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+    }
+    
+    // 滑动按钮伪元素
+    &::before {
+      content: "";
+      position: absolute;
+      width: 50%;
+      height: 34px;
+      border-radius: 18px;
+      top: 2px;
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1;
+      // 玻璃按钮样式
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.5) 100%);
+      box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.1),
+        inset 0 -2px 5px rgba(0, 0, 0, 0.05),
+        inset 0 2px 5px rgba(255, 255, 255, 0.5);
+    }
+    
+    // Light模式下滑块位置
+    &.light::before {
+      left: 2px;
+    }
+    
+    // Dark模式下滑块位置
+    &.dark::before {
+      left: calc(50% - 2px);
+    }
+    
+    // Light模式文字样式
+    &.light {
+      .light-option {
+        color: rgba(29, 43, 83, 1);
+        font-weight: 700;
+      }
+      
+      .dark-option {
+        color: rgba(0, 0, 0, 0.5);
+      }
+    }
+    
+    // Dark模式文字样式
+    &.dark {
+      .light-option {
+        color: rgba(255, 255, 255, 0.5);
+      }
+      
+      .dark-option {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 700;
+      }
+    }
+    
+    // active状态
+    &:active {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+// Global theme variables - 增强版视觉调整主题
+:root {
+  --bg-color: #f7f9fa;
+  --bg-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(245, 247, 250, 0.85));
+  --text-color: #2c3e50;
+  --text-secondary: #5d8bd7;
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.07);
+  --border-color: rgba(255, 255, 255, 0.38);
+  --primary-color: #3a86ff;
+  --primary-light: rgba(58, 134, 255, 0.2);
+  --glass-backdrop: blur(12px);
+}
+
+[data-theme="dark"] {
+  --bg-color: #0f172a;
+  --bg-gradient: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.9));
+  --text-color: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --card-bg: rgba(30, 41, 59, 0.7);
+  --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --primary-color: #60a5fa;
+  --primary-light: rgba(96, 165, 250, 0.15);
+  --glass-backdrop: blur(12px);
+}
+
+// Apply theme to body
+body {
+  background-color: var(--bg-color);
+  background-image: var(--bg-gradient);
+  color: var(--text-color);
+  transition: background-color 0.4s ease, color 0.4s ease;
+  
+  &::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.4;
+    background-image: 
+      radial-gradient(circle at 15% 50%, var(--primary-light) 0%, transparent 25%),
+      radial-gradient(circle at 85% 30%, var(--primary-light) 0%, transparent 25%);
+  }
+}
